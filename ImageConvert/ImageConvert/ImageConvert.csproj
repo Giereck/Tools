@@ -47,7 +47,6 @@
     <Compile Include="Converters\BitmapToJpgConverter.cs" />
     <Compile Include="Converters\IImageConverter.cs" />
     <Compile Include="Converters\ImageConverterBase.cs" />
-    <Compile Include="Converters\JpgToJpgConverter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

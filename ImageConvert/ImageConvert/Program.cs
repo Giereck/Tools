@@ -9,6 +9,8 @@ namespace ImageConvert
     {
         public static void Main(string[] args)
         {
+            Console.WriteLine("Input ");
+
             string sourceFolderPath = @"E:\Users\Giereck\Pictures\New Zealand 2017";
             string targetFolderPath = @"E:\Users\Giereck\Pictures\New Zealand 2017\Jpg";
 
