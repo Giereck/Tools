@@ -35,7 +35,7 @@ namespace ImageConvert
                 }                                   
             }
 
-            Console.WriteLine("All done!");
+            Console.WriteLine("All done2!");
             Console.ReadKey();            
         }
     }
