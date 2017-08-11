@@ -9,8 +9,8 @@ namespace ImageConvert
     {
         public static void Main(string[] args)
         {
-            string sourceFolderPath = @"E:\Users\Giereck\Pictures\New Zealand 2017";
-            string targetFolderPath = @"E:\Users\Giereck\Pictures\New Zealand 2017\Jpg";
+            string sourceFolderPath = @"E:\Users\Giereck\Pictures\Europatur 2017";
+            string targetFolderPath = @"E:\Users\Giereck\Pictures\Europatur 2017\compri";
 
             var filesPaths = Directory.GetFiles(sourceFolderPath).Where(f => Path.GetExtension(f).Equals(".jpg", StringComparison.OrdinalIgnoreCase)).ToList();
             Console.WriteLine($"Processing {filesPaths.Count} files..");
