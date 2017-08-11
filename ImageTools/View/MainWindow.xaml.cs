@@ -1,6 +1,6 @@
 ﻿using MahApps.Metro.Controls;
 
-namespace ImageTools
+namespace ImageTools.View
 {
     public partial class MainWindow : MetroWindow
     {
