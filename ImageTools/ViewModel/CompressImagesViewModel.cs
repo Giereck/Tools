@@ -8,6 +8,7 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using ImageTools.Compressor;
+using ImageTools.Renamer;
 using Cursors = System.Windows.Input.Cursors;
 
 namespace ImageTools.ViewModel
@@ -17,6 +18,8 @@ namespace ImageTools.ViewModel
         private string _sourceFolder;
         private string _targetFolder;
         private long _selectedQuailty;
+        private bool _shouldRenameFiles;
+        private string _renameFormat;
         private int _numberOfImages;
         private int _numberOfCompressedImages;
         private bool _isCompressing;
@@ -25,7 +28,8 @@ namespace ImageTools.ViewModel
         {
             _numberOfImages = 0;
             _numberOfCompressedImages = 0;
-            
+            RenameFormat = "yyyyMMdd_hhmmss";
+
             SelectSourceFolderCommand = new RelayCommand(SelectSourceFolderExecute);    
             SelectTargetFolderCommand = new RelayCommand(SelectTargetFolderExecute);    
             CompressImagesCommand = new RelayCommand(CompressImagesExecute, CompressImagesCanExecute);
@@ -63,6 +67,18 @@ namespace ImageTools.ViewModel
         {
             get { return _selectedQuailty; }
             set { Set(ref _selectedQuailty, value); }
+        }
+
+        public bool ShouldRenameFiles
+        {
+            get { return _shouldRenameFiles; }
+            set { Set(ref _shouldRenameFiles, value); }
+        }
+
+        public string RenameFormat
+        {
+            get { return _renameFormat; }
+            set { Set(ref _renameFormat, value); }
         }
 
         public int NumberOfImages
@@ -156,9 +172,12 @@ namespace ImageTools.ViewModel
             Task task = Task.Factory.StartNew(
                 () =>
                 {
+                    var filePathGenerator = ShouldRenameFiles
+                        ? (ITargetFileNameGenerator) new FormatTargetFileNameGenerator(RenameFormat) : new ImitatingTargetFileNameGenerator();
+                    
                     foreach (string filePath in filesPaths)
                     {
-                        if (CompressImage(filePath))
+                        if (CompressImage(filePath, filePathGenerator))
                         {
                             NumberOfCompressedImages++;
                         }
@@ -178,17 +197,15 @@ namespace ImageTools.ViewModel
             return task;
         }
         
-        private bool CompressImage(string filePath)
+        private bool CompressImage(string filePath, ITargetFileNameGenerator filePathGenerator)
         {
             bool success;
-
-            string targetFilePath = Path.Combine(TargetFolder, Path.GetFileName(filePath));
-
+            
             using (var converter = new JpgCompressor(SelectedQuality))
             {
                 try
                 {
-                    converter.Compress(filePath, targetFilePath);
+                    converter.Compress(filePath, filePathGenerator.GetTargetFilePath(filePath, TargetFolder));
                     success = true;
                 }
                 catch (Exception ex)

@@ -11,7 +11,6 @@ namespace ImageTools.ViewModel
 
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<CompressImagesViewModel>();
-            SimpleIoc.Default.Register<ArrangeImagesViewModel>();
         }
 
         public MainViewModel MainViewModel
@@ -29,15 +28,7 @@ namespace ImageTools.ViewModel
                 return ServiceLocator.Current.GetInstance<CompressImagesViewModel>();
             }
         }
-
-        public ArrangeImagesViewModel ArrangeImagesViewModel
-        {
-            get
-            {
-                return ServiceLocator.Current.GetInstance<ArrangeImagesViewModel>();
-            }
-        }
-
+        
         public static void Cleanup()
         {
             // TODO Clear the ViewModels

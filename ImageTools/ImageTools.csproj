@@ -82,13 +82,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Compressor\JpgCompressor.cs" />
-    <Compile Include="ViewModel\ArrangeImagesViewModel.cs" />
+    <Compile Include="Renamer\FormatTargetFileNameGenerator.cs" />
+    <Compile Include="Renamer\ITargetFileNameGenerator.cs" />
+    <Compile Include="Renamer\ImitatingTargetFileNameGenerator.cs" />
     <Compile Include="ViewModel\CompressImagesViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
-    <Compile Include="View\ArrangeImagesView.xaml.cs">
-      <DependentUpon>ArrangeImagesView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\CompressImagesView.xaml.cs">
       <DependentUpon>CompressImagesView.xaml</DependentUpon>
     </Compile>
@@ -100,10 +99,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Resources\Icons\Icons.ModernUi.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\ArrangeImagesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
