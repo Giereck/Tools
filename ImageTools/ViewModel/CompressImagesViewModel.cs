@@ -263,6 +263,7 @@ namespace ImageTools.ViewModel
                 uniqueEquipment.Add(equipmentName);
             }
 
+            DetectedSourceEquipmentList.Clear();
             foreach (var equipmentName in uniqueEquipment)
             {
                 DetectedSourceEquipmentList.Add(new Equipment(equipmentName));
