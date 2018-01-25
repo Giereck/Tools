@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
+using System.Linq;
+using ImageTools.Utilities;
 
 namespace ImageTools.Renamer
 {
     public class FormatTargetFileNameGenerator : ITargetFileNameGenerator
     {
-        private readonly string _format;
+        private readonly ImageOptions _imageOptions;
 
-        public FormatTargetFileNameGenerator(string format)
+        public FormatTargetFileNameGenerator(ImageOptions imageOptions)
         {
-            _format = format;
+            _imageOptions = imageOptions;
         }
 
         public string GetTargetFilePath(string originalFilePath, string targetFolderPath)
@@ -38,7 +36,7 @@ namespace ImageTools.Renamer
 
         private string InsertDateFormatValues(string originalFilePath)
         {
-            string fileName = _format;
+            string fileName = _imageOptions.FileFormat;
             DateTime imageDateTaken = GetImageDateTaken(originalFilePath);
 
             fileName = fileName.Replace("ss", imageDateTaken.TimeOfDay.Seconds.ToString("00"));
@@ -52,22 +50,17 @@ namespace ImageTools.Renamer
 
         private DateTime GetImageDateTaken(string filePath)
         {
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            var equipmentName = ImagePropertyExtractor.GetEquipmentName(filePath);
+            var dateTaken = ImagePropertyExtractor.GetOriginalCreationDateTime(filePath);
+
+            var equipment = _imageOptions.EquipmentList.FirstOrDefault(e => e.Name == equipmentName);
+
+            if (equipment != null)
             {
-                using (Image myImage = Image.FromStream(fs, false, false))
-                {
-                    try
-                    {
-                        PropertyItem propItem = myImage.GetPropertyItem(36867);
-                        string dateTaken = new Regex(":").Replace(Encoding.UTF8.GetString(propItem.Value), "-", 2);
-                        return DateTime.Parse(dateTaken);
-                    }
-                    catch (Exception)
-                    {
-                        return File.GetCreationTime(filePath);
-                    }
-                }
+                dateTaken = dateTaken.AddHours(equipment.HourOffset);
             }
+
+            return dateTaken;
         }
     }
 }

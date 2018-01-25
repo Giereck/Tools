@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -9,6 +12,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using ImageTools.Compressor;
 using ImageTools.Renamer;
+using ImageTools.Utilities;
 using Cursors = System.Windows.Input.Cursors;
 
 namespace ImageTools.ViewModel
@@ -30,11 +34,16 @@ namespace ImageTools.ViewModel
             _numberOfCompressedImages = 0;
             RenameFormat = "yyyyMMdd_hhmmss";
 
-            SelectSourceFolderCommand = new RelayCommand(SelectSourceFolderExecute);    
-            SelectTargetFolderCommand = new RelayCommand(SelectTargetFolderExecute);    
+            SelectSourceFolderCommand = new RelayCommand(SelectSourceFolderExecute);
+            SelectTargetFolderCommand = new RelayCommand(SelectTargetFolderExecute);
             CompressImagesCommand = new RelayCommand(CompressImagesExecute, CompressImagesCanExecute);
+
+            DetectedSourceEquipmentList = new ObservableCollection<Equipment>();
+
+            SourceFolder = @"C:\temp\ImageConvert\SourceFolder";
+            TargetFolder = @"C:\temp\ImageConvert\TargetFolder";
         }
-        
+
         public List<long> QualityValues => new List<long> {50, 60, 70, 80, 90, 100};
 
         public ICommand SelectSourceFolderCommand { get; }
@@ -42,6 +51,8 @@ namespace ImageTools.ViewModel
         public ICommand SelectTargetFolderCommand { get; }
 
         public ICommand CompressImagesCommand { get; }
+
+        public ObservableCollection<Equipment> DetectedSourceEquipmentList { get; }
 
         public string SourceFolder
         {
@@ -52,7 +63,7 @@ namespace ImageTools.ViewModel
 
                 if (!string.IsNullOrWhiteSpace(_sourceFolder) && Directory.Exists(_sourceFolder))
                 {
-                    NumberOfImages = GetJpgFilesFromFolder(_sourceFolder).Count;
+                    AnalyzeSourceFolder();
                 }
             }
         }
@@ -102,7 +113,7 @@ namespace ImageTools.ViewModel
         private void SelectSourceFolderExecute()
         {
             var selectedFolder = GetFolder(string.IsNullOrEmpty(SourceFolder) ? TargetFolder : SourceFolder);
-            
+
             if (!string.IsNullOrEmpty(selectedFolder))
             {
                 SourceFolder = selectedFolder;
@@ -118,7 +129,7 @@ namespace ImageTools.ViewModel
                 TargetFolder = selectedFolder;
             }
         }
-        
+
         private string GetFolder(string startPath)
         {
             using (var dialog = new FolderBrowserDialog())
@@ -172,9 +183,16 @@ namespace ImageTools.ViewModel
             Task task = Task.Factory.StartNew(
                 () =>
                 {
-                    var filePathGenerator = ShouldRenameFiles
-                        ? (ITargetFileNameGenerator) new FormatTargetFileNameGenerator(RenameFormat) : new ImitatingTargetFileNameGenerator();
-                    
+                    ITargetFileNameGenerator filePathGenerator;
+                    if (ShouldRenameFiles)
+                    {
+                        var imageOptions = new ImageOptions();
+                        imageOptions.FileFormat = RenameFormat;
+                        imageOptions.EquipmentList.AddRange(DetectedSourceEquipmentList);
+                        filePathGenerator = new FormatTargetFileNameGenerator(imageOptions);
+                    }
+                    else filePathGenerator = new ImitatingTargetFileNameGenerator();
+
                     foreach (string filePath in filesPaths)
                     {
                         if (CompressImage(filePath, filePathGenerator))
@@ -187,20 +205,20 @@ namespace ImageTools.ViewModel
                         }
                     }
                 }).ContinueWith(
-                        t =>
+                    t =>
+                    {
+                        if (t.Exception != null)
                         {
-                            if (t.Exception != null)
-                            {
-                                MessageBox.Show(t.Exception.ToString());
-                            }
-                        });
+                            MessageBox.Show(t.Exception.ToString());
+                        }
+                    });
             return task;
         }
-        
+
         private bool CompressImage(string filePath, ITargetFileNameGenerator filePathGenerator)
         {
             bool success;
-            
+
             using (var converter = new JpgCompressor(SelectedQuality))
             {
                 try
@@ -210,7 +228,8 @@ namespace ImageTools.ViewModel
                 }
                 catch (Exception ex)
                 {
-                    var message = $"An error occured while trying to compress image: '{filePath}'. The reason was: '{ex.Message}'";
+                    var message =
+                        $"An error occured while trying to compress image: '{filePath}'. The reason was: '{ex.Message}'";
                     MessageBox.Show(message, "Image tools", MessageBoxButtons.OK);
                     success = false;
                 }
@@ -218,10 +237,36 @@ namespace ImageTools.ViewModel
 
             return success;
         }
+        
+        private void AnalyzeSourceFolder()
+        {
+            var jpgFilePaths = GetJpgFilesFromFolder(_sourceFolder);
+            NumberOfImages = jpgFilePaths.Count;
+            DetectEquipment(jpgFilePaths);
+        }
 
         private List<string> GetJpgFilesFromFolder(string folderPath)
         {
-            return Directory.GetFiles(folderPath).Where(f => Path.GetExtension(f).Equals(".jpg", StringComparison.OrdinalIgnoreCase)).ToList();
+            return
+                Directory.GetFiles(folderPath)
+                    .Where(f => Path.GetExtension(f).Equals(".jpg", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+        }
+
+        private void DetectEquipment(List<string> filePaths)
+        {
+            HashSet<string> uniqueEquipment = new HashSet<string>();
+
+            foreach (var filePath in filePaths)
+            {
+                var equipmentName = ImagePropertyExtractor.GetEquipmentName(filePath);
+                uniqueEquipment.Add(equipmentName);
+            }
+
+            foreach (var equipmentName in uniqueEquipment)
+            {
+                DetectedSourceEquipmentList.Add(new Equipment(equipmentName));
+            }
         }
     }
 }

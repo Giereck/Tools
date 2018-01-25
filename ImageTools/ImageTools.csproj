@@ -85,6 +85,9 @@
     <Compile Include="Renamer\FormatTargetFileNameGenerator.cs" />
     <Compile Include="Renamer\ITargetFileNameGenerator.cs" />
     <Compile Include="Renamer\ImitatingTargetFileNameGenerator.cs" />
+    <Compile Include="Utilities\Equipment.cs" />
+    <Compile Include="Utilities\ImageOptions.cs" />
+    <Compile Include="Utilities\ImagePropertyExtractor.cs" />
     <Compile Include="ViewModel\CompressImagesViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
