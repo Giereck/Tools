@@ -39,9 +39,6 @@ namespace ImageTools.ViewModel
             CompressImagesCommand = new RelayCommand(CompressImagesExecute, CompressImagesCanExecute);
 
             DetectedSourceEquipmentList = new ObservableCollection<Equipment>();
-
-            SourceFolder = @"C:\temp\ImageConvert\SourceFolder";
-            TargetFolder = @"C:\temp\ImageConvert\TargetFolder";
         }
 
         public List<long> QualityValues => new List<long> {50, 60, 70, 80, 90, 100};
@@ -255,18 +252,27 @@ namespace ImageTools.ViewModel
 
         private void DetectEquipment(List<string> filePaths)
         {
-            HashSet<string> uniqueEquipment = new HashSet<string>();
-
-            foreach (var filePath in filePaths)
+            try
             {
-                var equipmentName = ImagePropertyExtractor.GetEquipmentName(filePath);
-                uniqueEquipment.Add(equipmentName);
+                Mouse.SetCursor(Cursors.Wait);
+
+                HashSet<string> uniqueEquipment = new HashSet<string>();
+
+                foreach (var filePath in filePaths)
+                {
+                    var equipmentName = ImagePropertyExtractor.GetEquipmentName(filePath);
+                    uniqueEquipment.Add(equipmentName);
+                }
+
+                DetectedSourceEquipmentList.Clear();
+                foreach (var equipmentName in uniqueEquipment)
+                {
+                    DetectedSourceEquipmentList.Add(new Equipment(equipmentName));
+                }
             }
-
-            DetectedSourceEquipmentList.Clear();
-            foreach (var equipmentName in uniqueEquipment)
+            finally
             {
-                DetectedSourceEquipmentList.Add(new Equipment(equipmentName));
+                Mouse.SetCursor(Cursors.Arrow);
             }
         }
     }
