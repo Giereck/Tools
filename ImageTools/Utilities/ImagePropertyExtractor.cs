@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -48,19 +49,35 @@ namespace ImageTools.Utilities
 
         private static string GetEquipmentManufacturer(Image image)
         {
-            var propertyItem = image.GetPropertyItem(0x010F);
+            var propertyItem = GetPropertyItem(0x010F, image);
             return propertyItem == null ? "Unknown manufacturer" : Decode(propertyItem.Value);
         }
 
         private static string GetEquipmentModel(Image image)
         {
-            var propertyItem = image.GetPropertyItem(0x0110);
+            var propertyItem = GetPropertyItem(0x0110, image);
             return propertyItem == null ? "Unknown model" : Decode(propertyItem.Value);
         }
         
         private static string Decode(byte[] bytes)
         {
             return Encoding.GetString(bytes).Trim('\0');
+        }
+
+        private static PropertyItem GetPropertyItem(int propertyItemId, Image image)
+        {
+            PropertyItem propertyItem;
+
+            try
+            {
+                propertyItem = image.GetPropertyItem(propertyItemId);
+            }
+            catch (Exception)
+            {
+                propertyItem = null;
+            }
+
+            return propertyItem;
         }
     }
 }
