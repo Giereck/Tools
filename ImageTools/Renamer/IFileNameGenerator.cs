@@ -1,6 +1,6 @@
 ﻿namespace ImageTools.Renamer
 {
-    public interface ITargetFileNameGenerator
+    public interface IFileNameGenerator
     {
         string GetTargetFilePath(string originalFilePath, string targetFolderPath);
     }

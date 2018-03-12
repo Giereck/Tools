@@ -162,13 +162,13 @@ namespace ImageTools.ViewModel
         {
             NumberOfCompressedImages = 0;
 
-            var filesPaths = _folderManager.GetJpgFilesFromFolder(SourceFolder);
+            var filePaths = _folderManager.GetJpgFilesFromFolder(SourceFolder);
 
             try
             {
                 Mouse.SetCursor(Cursors.Wait);
                 IsCompressing = true;
-                CompressImagesAsync(filesPaths);
+                CompressImagesAsync(filePaths);
             }
             finally
             {
@@ -177,41 +177,37 @@ namespace ImageTools.ViewModel
             }
         }
 
-        private async Task CompressImagesAsync(IList<string> filesPaths)
+        private async Task CompressImagesAsync(IList<string> filePaths)
         {
-            await CompressImages(filesPaths);
+            await CompressImages(filePaths);
         }
 
-        private Task CompressImages(IList<string> filesPaths)
+        private Task CompressImages(IList<string> filePaths)
         {
             Task task = Task.Factory.StartNew(
                 () =>
                 {
-                    ITargetFileNameGenerator filePathGenerator;
-                    if (ShouldRenameFiles)
-                    {
-                        var imageOptions = new ImageOptions();
-                        imageOptions.FileFormat = RenameFormat;
-                        imageOptions.EquipmentList.AddRange(DetectedSourceEquipmentList);
-                        var formatTargetFileNameGenerator = Container.Resolve<IFormatTargetFileNameGenerator>();
-                        formatTargetFileNameGenerator.Options = imageOptions;
-                        filePathGenerator = formatTargetFileNameGenerator;
-                    }
-                    else
-                    {
-                        filePathGenerator = Container.Resolve<IImitatingTargetFileNameGenerator>();
-                    }
+                    var filePathGenerator = GetFilePathGenerator();
 
-                    foreach (string filePath in filesPaths)
+                    ImageCompressor imageCompressor = new JpgCompressor(SelectedQuality);
+
+                    foreach (string filePath in filePaths)
                     {
-                        if (CompressImage(filePath, filePathGenerator))
+                        var targetFilePath = filePathGenerator.GetTargetFilePath(filePath, TargetFolder);
+
+                        try
                         {
-                            NumberOfCompressedImages++;
+                            imageCompressor.Compress(filePath, targetFilePath);
                         }
-                        else
+                        catch (Exception ex)
                         {
+                            var message = $"An error occurred while trying to compress image: '{filePath}'. The reason was: '{ex.Message}'";
+                            MessageBox.Show(message, "Image tools", MessageBoxButtons.OK);
                             break;
                         }
+
+                        NumberOfCompressedImages++;
+                        
                     }
                 }).ContinueWith(
                     t =>
@@ -224,29 +220,27 @@ namespace ImageTools.ViewModel
             return task;
         }
 
-        private bool CompressImage(string filePath, ITargetFileNameGenerator filePathGenerator)
+        private IFileNameGenerator GetFilePathGenerator()
         {
-            bool success;
+            IFileNameGenerator filePathGenerator;
 
-            using (var converter = new JpgCompressor(SelectedQuality))
+            if (ShouldRenameFiles)
             {
-                try
-                {
-                    converter.Compress(filePath, filePathGenerator.GetTargetFilePath(filePath, TargetFolder));
-                    success = true;
-                }
-                catch (Exception ex)
-                {
-                    var message =
-                        $"An error occured while trying to compress image: '{filePath}'. The reason was: '{ex.Message}'";
-                    MessageBox.Show(message, "Image tools", MessageBoxButtons.OK);
-                    success = false;
-                }
+                var imageOptions = new ImageOptions();
+                imageOptions.FileFormat = RenameFormat;
+                imageOptions.EquipmentList.AddRange(DetectedSourceEquipmentList);
+                var formatTargetFileNameGenerator = Container.Resolve<IFormatFileNameGenerator>();
+                formatTargetFileNameGenerator.Options = imageOptions;
+                filePathGenerator = formatTargetFileNameGenerator;
+            }
+            else
+            {
+                filePathGenerator = Container.Resolve<IImitatingFileNameGenerator>();
             }
 
-            return success;
+            return filePathGenerator;
         }
-        
+
         private void AnalyzeSourceFolder()
         {
             var jpgFilePaths = _folderManager.GetJpgFilesFromFolder(_sourceFolder);

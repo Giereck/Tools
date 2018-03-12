@@ -5,16 +5,16 @@ using ImageTools.Utilities;
 
 namespace ImageTools.Renamer
 {
-    public interface IFormatTargetFileNameGenerator : ITargetFileNameGenerator
+    public interface IFormatFileNameGenerator : IFileNameGenerator
     {
         ImageOptions Options { get; set; }
     }
 
-    public class FormatTargetFileNameGenerator : IFormatTargetFileNameGenerator
+    public class FormatFileNameGenerator : IFormatFileNameGenerator
     {
         private readonly IImagePropertyExtractor _imagePropertyExtractor;
 
-        public FormatTargetFileNameGenerator(IImagePropertyExtractor imagePropertyExtractor)
+        public FormatFileNameGenerator(IImagePropertyExtractor imagePropertyExtractor)
         {
             if (imagePropertyExtractor == null) throw new ArgumentNullException(nameof(imagePropertyExtractor));
 

@@ -14,10 +14,8 @@ namespace ImageTools.Infrastructure
             container.Register(Component.For<IFolderManager>().ImplementedBy<FolderManager>());
             container.Register(Component.For<IEquipmentDetector>().ImplementedBy<EquipmentDetector>());
             container.Register(Component.For<IImagePropertyExtractor>().ImplementedBy<ImagePropertyExtractor>());
-            container.Register(Component.For<IFormatTargetFileNameGenerator>().ImplementedBy<FormatTargetFileNameGenerator>());
-            container.Register(Component.For<IImitatingTargetFileNameGenerator>().ImplementedBy<ImitatingTargetFileNameGenerator>());
-
-            //container.Register(Classes.FromThisAssembly().InNamespace("ImageTools").WithService.DefaultInterfaces());
+            container.Register(Component.For<IFormatFileNameGenerator>().ImplementedBy<FormatFileNameGenerator>());
+            container.Register(Component.For<IImitatingFileNameGenerator>().ImplementedBy<ImitatingFileNameGenerator>());
         }
     }
 }
