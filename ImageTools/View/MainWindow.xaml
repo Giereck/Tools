@@ -15,6 +15,9 @@
                 <TabItem Header="Compress">
                     <view:CompressImagesView Margin="10" />
                 </TabItem>
+                <TabItem Header="SelectFolder">
+                    <view:SelectFolderView Margin="10" />
+                </TabItem>
             </TabControl.Items>
         </TabControl>
     </Grid>

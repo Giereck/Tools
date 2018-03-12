@@ -35,6 +35,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>packages\Castle.Core.4.2.0\lib\net45\Castle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Castle.Windsor, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>packages\Castle.Windsor.4.1.0\lib\net45\Castle.Windsor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="GalaSoft.MvvmLight, Version=5.3.0.19026, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
       <HintPath>packages\MvvmLightLibs.5.3.0.0\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
       <Private>True</Private>
@@ -56,8 +64,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\MvvmLightLibs.5.3.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
@@ -82,14 +93,19 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Compressor\JpgCompressor.cs" />
+    <Compile Include="Infrastructure\Container.cs" />
+    <Compile Include="Infrastructure\ContainerBootStrapper.cs" />
+    <Compile Include="Model\Folder.cs" />
     <Compile Include="Renamer\FormatTargetFileNameGenerator.cs" />
     <Compile Include="Renamer\ITargetFileNameGenerator.cs" />
     <Compile Include="Renamer\ImitatingTargetFileNameGenerator.cs" />
     <Compile Include="Utilities\Equipment.cs" />
+    <Compile Include="Utilities\FolderManager.cs" />
     <Compile Include="Utilities\ImageOptions.cs" />
     <Compile Include="Utilities\ImagePropertyExtractor.cs" />
     <Compile Include="ViewModel\CompressImagesViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="ViewModel\SelectFolderViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\CompressImagesView.xaml.cs">
       <DependentUpon>CompressImagesView.xaml</DependentUpon>
@@ -100,6 +116,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="View\SelectFolderView.xaml.cs">
+      <DependentUpon>SelectFolderView.xaml</DependentUpon>
     </Compile>
     <Page Include="Resources\Icons\Icons.ModernUi.xaml">
       <SubType>Designer</SubType>
@@ -112,6 +131,10 @@
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\SelectFolderView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

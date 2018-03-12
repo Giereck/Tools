@@ -1,5 +1,6 @@
-using GalaSoft.MvvmLight.Ioc;
-using Microsoft.Practices.ServiceLocation;
+using Castle.MicroKernel.Registration;
+using Castle.Windsor;
+using ImageTools.Infrastructure;
 
 namespace ImageTools.ViewModel
 {
@@ -7,28 +8,21 @@ namespace ImageTools.ViewModel
     {
         public ViewModelLocator()
         {
-            ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
-
-            SimpleIoc.Default.Register<MainViewModel>();
-            SimpleIoc.Default.Register<CompressImagesViewModel>();
         }
 
-        public MainViewModel MainViewModel
+        public ViewModelLocator(IWindsorContainer container)
         {
-            get
-            {
-                return ServiceLocator.Current.GetInstance<MainViewModel>();
-            }
+            container.Register(Component.For<MainViewModel>());
+            container.Register(Component.For<CompressImagesViewModel>());
+            container.Register(Component.For<SelectFolderViewModel>());
         }
 
-        public CompressImagesViewModel CompressImagesViewModel
-        {
-            get
-            {
-                return ServiceLocator.Current.GetInstance<CompressImagesViewModel>();
-            }
-        }
-        
+        public MainViewModel MainViewModel => Container.Resolve<MainViewModel>();
+
+        public CompressImagesViewModel CompressImagesViewModel => Container.Resolve<CompressImagesViewModel>();
+
+        public SelectFolderViewModel SelectFolderViewModel => Container.Resolve<SelectFolderViewModel>();
+
         public static void Cleanup()
         {
             // TODO Clear the ViewModels
