@@ -2,7 +2,11 @@
 
 namespace ImageTools.Renamer
 {
-    public class ImitatingTargetFileNameGenerator : ITargetFileNameGenerator
+    public interface IImitatingTargetFileNameGenerator : ITargetFileNameGenerator
+    {
+    }
+
+    public class ImitatingTargetFileNameGenerator : IImitatingTargetFileNameGenerator
     {
         public string GetTargetFilePath(string originalFilePath, string targetFolderPath)
         {

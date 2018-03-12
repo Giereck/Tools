@@ -22,10 +22,5 @@ namespace ImageTools.ViewModel
         public CompressImagesViewModel CompressImagesViewModel => Container.Resolve<CompressImagesViewModel>();
 
         public SelectFolderViewModel SelectFolderViewModel => Container.Resolve<SelectFolderViewModel>();
-
-        public static void Cleanup()
-        {
-            // TODO Clear the ViewModels
-        }
     }
 }

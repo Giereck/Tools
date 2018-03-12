@@ -8,11 +8,21 @@ namespace ImageTools.Utilities
 {
     public interface IFolderManager
     {
+        IList<string> GetJpgFilesFromFolder(string folderPath);
+
         List<Folder> GetSubFolders(string parentFolderPath);
     }
 
     public class FolderManager : IFolderManager
     {
+        public IList<string> GetJpgFilesFromFolder(string folderPath)
+        {
+            return
+                Directory.GetFiles(folderPath)
+                    .Where(f => Path.GetExtension(f).Equals(".jpg", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+        }
+
         public List<Folder> GetSubFolders(string parentFolderPath)
         {
             List<Folder> subFolders = new List<Folder>();

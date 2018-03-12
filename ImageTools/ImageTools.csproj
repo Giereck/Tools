@@ -95,11 +95,13 @@
     <Compile Include="Compressor\JpgCompressor.cs" />
     <Compile Include="Infrastructure\Container.cs" />
     <Compile Include="Infrastructure\ContainerBootStrapper.cs" />
+    <Compile Include="Infrastructure\ObservableCollectionExtensions.cs" />
+    <Compile Include="Model\Equipment.cs" />
     <Compile Include="Model\Folder.cs" />
     <Compile Include="Renamer\FormatTargetFileNameGenerator.cs" />
     <Compile Include="Renamer\ITargetFileNameGenerator.cs" />
     <Compile Include="Renamer\ImitatingTargetFileNameGenerator.cs" />
-    <Compile Include="Utilities\Equipment.cs" />
+    <Compile Include="Utilities\EquipmentDetector.cs" />
     <Compile Include="Utilities\FolderManager.cs" />
     <Compile Include="Utilities\ImageOptions.cs" />
     <Compile Include="Utilities\ImagePropertyExtractor.cs" />

@@ -8,11 +8,18 @@ using System.Text.RegularExpressions;
 
 namespace ImageTools.Utilities
 {
-    public static class ImagePropertyExtractor
+    public interface IImagePropertyExtractor
     {
-        private static readonly Encoding Encoding = new UTF8Encoding();
+        DateTime GetOriginalCreationDateTime(string filePath);
 
-        public static DateTime GetOriginalCreationDateTime(string filePath)
+        string GetEquipmentName(string filePath);
+    }
+
+    public class ImagePropertyExtractor : IImagePropertyExtractor
+    {
+        private readonly Encoding Encoding = new UTF8Encoding();
+
+        public DateTime GetOriginalCreationDateTime(string filePath)
         {
             using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
@@ -32,7 +39,7 @@ namespace ImageTools.Utilities
             }
         }
 
-        public static string GetEquipmentName(string filePath)
+        public string GetEquipmentName(string filePath)
         {
             using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
@@ -47,24 +54,24 @@ namespace ImageTools.Utilities
             }
         }
 
-        private static string GetEquipmentManufacturer(Image image)
+        private string GetEquipmentManufacturer(Image image)
         {
             var propertyItem = GetPropertyItem(0x010F, image);
             return propertyItem == null ? "Unknown manufacturer" : Decode(propertyItem.Value);
         }
 
-        private static string GetEquipmentModel(Image image)
+        private string GetEquipmentModel(Image image)
         {
             var propertyItem = GetPropertyItem(0x0110, image);
             return propertyItem == null ? "Unknown model" : Decode(propertyItem.Value);
         }
         
-        private static string Decode(byte[] bytes)
+        private string Decode(byte[] bytes)
         {
             return Encoding.GetString(bytes).Trim('\0');
         }
 
-        private static PropertyItem GetPropertyItem(int propertyItemId, Image image)
+        private PropertyItem GetPropertyItem(int propertyItemId, Image image)
         {
             PropertyItem propertyItem;
 

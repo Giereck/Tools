@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using ImageTools.Compressor;
+using ImageTools.Infrastructure;
+using ImageTools.Model;
 using ImageTools.Renamer;
 using ImageTools.Utilities;
 using Cursors = System.Windows.Input.Cursors;
@@ -19,6 +18,8 @@ namespace ImageTools.ViewModel
 {
     public class CompressImagesViewModel : ViewModelBase
     {
+        private readonly IFolderManager _folderManager;
+        private readonly IEquipmentDetector _equipmentDetector;
         private string _sourceFolder;
         private string _targetFolder;
         private long _selectedQuailty;
@@ -28,8 +29,14 @@ namespace ImageTools.ViewModel
         private int _numberOfCompressedImages;
         private bool _isCompressing;
 
-        public CompressImagesViewModel()
+        public CompressImagesViewModel(IFolderManager folderManager, IEquipmentDetector equipmentDetector)
         {
+            if (folderManager == null) throw new ArgumentNullException(nameof(folderManager));
+            if (equipmentDetector == null) throw new ArgumentNullException(nameof(equipmentDetector));
+
+            _folderManager = folderManager;
+            _equipmentDetector = equipmentDetector;
+
             _numberOfImages = 0;
             _numberOfCompressedImages = 0;
             RenameFormat = "yyyyMMdd_hhmmss";
@@ -155,7 +162,7 @@ namespace ImageTools.ViewModel
         {
             NumberOfCompressedImages = 0;
 
-            var filesPaths = GetJpgFilesFromFolder(SourceFolder);
+            var filesPaths = _folderManager.GetJpgFilesFromFolder(SourceFolder);
 
             try
             {
@@ -170,12 +177,12 @@ namespace ImageTools.ViewModel
             }
         }
 
-        private async Task CompressImagesAsync(List<string> filesPaths)
+        private async Task CompressImagesAsync(IList<string> filesPaths)
         {
             await CompressImages(filesPaths);
         }
 
-        private Task CompressImages(List<string> filesPaths)
+        private Task CompressImages(IList<string> filesPaths)
         {
             Task task = Task.Factory.StartNew(
                 () =>
@@ -186,9 +193,14 @@ namespace ImageTools.ViewModel
                         var imageOptions = new ImageOptions();
                         imageOptions.FileFormat = RenameFormat;
                         imageOptions.EquipmentList.AddRange(DetectedSourceEquipmentList);
-                        filePathGenerator = new FormatTargetFileNameGenerator(imageOptions);
+                        var formatTargetFileNameGenerator = Container.Resolve<IFormatTargetFileNameGenerator>();
+                        formatTargetFileNameGenerator.Options = imageOptions;
+                        filePathGenerator = formatTargetFileNameGenerator;
                     }
-                    else filePathGenerator = new ImitatingTargetFileNameGenerator();
+                    else
+                    {
+                        filePathGenerator = Container.Resolve<IImitatingTargetFileNameGenerator>();
+                    }
 
                     foreach (string filePath in filesPaths)
                     {
@@ -237,43 +249,16 @@ namespace ImageTools.ViewModel
         
         private void AnalyzeSourceFolder()
         {
-            var jpgFilePaths = GetJpgFilesFromFolder(_sourceFolder);
+            var jpgFilePaths = _folderManager.GetJpgFilesFromFolder(_sourceFolder);
             NumberOfImages = jpgFilePaths.Count;
-            DetectEquipment(jpgFilePaths);
+
+            DetectEquipment();
         }
 
-        private List<string> GetJpgFilesFromFolder(string folderPath)
+        private void DetectEquipment()
         {
-            return
-                Directory.GetFiles(folderPath)
-                    .Where(f => Path.GetExtension(f).Equals(".jpg", StringComparison.OrdinalIgnoreCase))
-                    .ToList();
-        }
-
-        private void DetectEquipment(List<string> filePaths)
-        {
-            try
-            {
-                Mouse.SetCursor(Cursors.Wait);
-
-                HashSet<string> uniqueEquipment = new HashSet<string>();
-
-                foreach (var filePath in filePaths)
-                {
-                    var equipmentName = ImagePropertyExtractor.GetEquipmentName(filePath);
-                    uniqueEquipment.Add(equipmentName);
-                }
-
-                DetectedSourceEquipmentList.Clear();
-                foreach (var equipmentName in uniqueEquipment)
-                {
-                    DetectedSourceEquipmentList.Add(new Equipment(equipmentName));
-                }
-            }
-            finally
-            {
-                Mouse.SetCursor(Cursors.Arrow);
-            }
+            DetectedSourceEquipmentList.Clear();
+            DetectedSourceEquipmentList.AddRange(_equipmentDetector.DetectEquipment(_sourceFolder));
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using ImageTools.Renamer;
 using ImageTools.Utilities;
 using ImageTools.ViewModel;
 
@@ -11,6 +12,10 @@ namespace ImageTools.Infrastructure
         {
             container.Register(Component.For<ViewModelLocator>().Instance(new ViewModelLocator(container)));
             container.Register(Component.For<IFolderManager>().ImplementedBy<FolderManager>());
+            container.Register(Component.For<IEquipmentDetector>().ImplementedBy<EquipmentDetector>());
+            container.Register(Component.For<IImagePropertyExtractor>().ImplementedBy<ImagePropertyExtractor>());
+            container.Register(Component.For<IFormatTargetFileNameGenerator>().ImplementedBy<FormatTargetFileNameGenerator>());
+            container.Register(Component.For<IImitatingTargetFileNameGenerator>().ImplementedBy<ImitatingTargetFileNameGenerator>());
 
             //container.Register(Classes.FromThisAssembly().InNamespace("ImageTools").WithService.DefaultInterfaces());
         }

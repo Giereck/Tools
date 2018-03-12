@@ -1,6 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 
-namespace ImageTools.Utilities
+namespace ImageTools.Model
 {
     public class Equipment : ObservableObject
     {

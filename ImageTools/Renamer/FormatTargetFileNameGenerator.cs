@@ -5,14 +5,23 @@ using ImageTools.Utilities;
 
 namespace ImageTools.Renamer
 {
-    public class FormatTargetFileNameGenerator : ITargetFileNameGenerator
+    public interface IFormatTargetFileNameGenerator : ITargetFileNameGenerator
     {
-        private readonly ImageOptions _imageOptions;
+        ImageOptions Options { get; set; }
+    }
 
-        public FormatTargetFileNameGenerator(ImageOptions imageOptions)
+    public class FormatTargetFileNameGenerator : IFormatTargetFileNameGenerator
+    {
+        private readonly IImagePropertyExtractor _imagePropertyExtractor;
+
+        public FormatTargetFileNameGenerator(IImagePropertyExtractor imagePropertyExtractor)
         {
-            _imageOptions = imageOptions;
+            if (imagePropertyExtractor == null) throw new ArgumentNullException(nameof(imagePropertyExtractor));
+
+            _imagePropertyExtractor = imagePropertyExtractor;
         }
+
+        public ImageOptions Options { get; set; }
 
         public string GetTargetFilePath(string originalFilePath, string targetFolderPath)
         {
@@ -36,7 +45,7 @@ namespace ImageTools.Renamer
 
         private string InsertDateFormatValues(string originalFilePath)
         {
-            string fileName = _imageOptions.FileFormat;
+            string fileName = Options.FileFormat;
             DateTime imageDateTaken = GetImageDateTaken(originalFilePath);
 
             fileName = fileName.Replace("ss", imageDateTaken.TimeOfDay.Seconds.ToString("00"));
@@ -50,10 +59,10 @@ namespace ImageTools.Renamer
 
         private DateTime GetImageDateTaken(string filePath)
         {
-            var equipmentName = ImagePropertyExtractor.GetEquipmentName(filePath);
-            var dateTaken = ImagePropertyExtractor.GetOriginalCreationDateTime(filePath);
+            var equipmentName = _imagePropertyExtractor.GetEquipmentName(filePath);
+            var dateTaken = _imagePropertyExtractor.GetOriginalCreationDateTime(filePath);
 
-            var equipment = _imageOptions.EquipmentList.FirstOrDefault(e => e.Name == equipmentName);
+            var equipment = Options.EquipmentList.FirstOrDefault(e => e.Name == equipmentName);
 
             if (equipment != null)
             {
