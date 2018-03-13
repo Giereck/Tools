@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Windows.Input;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.CommandWpf;
 using ImageTools.Model;
 using ImageTools.Utilities;
 
@@ -10,6 +13,7 @@ namespace ImageTools.ViewModel
     {
         private readonly IFolderManager _folderManager;
         private string _selectedFolder;
+        //private string _drillDownFolder;
 
         public SelectFolderViewModel(IFolderManager folderManager)
         {
@@ -17,9 +21,13 @@ namespace ImageTools.ViewModel
 
             _folderManager = folderManager;
 
+            DrillDownFolderCommand = new RelayCommand<string>(DrillDownFolderExecuted);
+
             Folders = new ObservableCollection<Folder>();
             SelectedFolder = string.Empty;
         }
+        
+        public ICommand DrillDownFolderCommand { get; }
         
         public string SelectedFolder
         {
@@ -32,6 +40,12 @@ namespace ImageTools.ViewModel
                 }
             }
         }
+        
+        //public string DrillDownFolder
+        //{
+        //    get { return _drillDownFolder; }
+        //    set { Set(ref _drillDownFolder, value); }
+        //}
 
         public ObservableCollection<Folder> Folders { get; }
 
@@ -41,6 +55,14 @@ namespace ImageTools.ViewModel
             foreach (var subFolder in _folderManager.GetSubFolders(currentFolder))
             {
                 Folders.Add(subFolder);
+            }
+        }
+
+        private void DrillDownFolderExecuted(string folder)
+        {
+            if (Directory.Exists(folder))
+            {
+                LoadFolders(folder);
             }
         }
     }
