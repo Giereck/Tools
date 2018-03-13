@@ -42,18 +42,9 @@ namespace ImageTools.Utilities
         {
             if (folderPath == null) throw new ArgumentNullException(nameof(folderPath));
 
-            Folder parentFolder;
+            var parentDirectory = Directory.GetParent(folderPath);
 
-            if (Directory.Exists(folderPath))
-            {
-                var parentDirectory = Directory.GetParent(folderPath);
-                parentFolder = GetFolder(parentDirectory.ToString());
-            }
-            else
-            {
-                parentFolder = Folder.None;
-            }
-
+            var parentFolder = parentDirectory == null ? Folder.None : GetFolder(parentDirectory.ToString());
             return parentFolder;
         }
 
