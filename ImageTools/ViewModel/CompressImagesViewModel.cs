@@ -188,16 +188,17 @@ namespace ImageTools.ViewModel
                 () =>
                 {
                     var filePathGenerator = GetFilePathGenerator();
-
-                    ImageCompressor imageCompressor = new JpgCompressor(SelectedQuality);
-
+                    
                     foreach (string filePath in filePaths)
                     {
                         var targetFilePath = filePathGenerator.GetTargetFilePath(filePath, TargetFolder);
 
                         try
                         {
-                            imageCompressor.Compress(filePath, targetFilePath);
+                            using (var imageCompressor = new JpgCompressor(SelectedQuality))
+                            {
+                                imageCompressor.Compress(filePath, targetFilePath);
+                            }
                         }
                         catch (Exception ex)
                         {
