@@ -4,11 +4,12 @@
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:view="clr-namespace:ImageTools.View"
                       Title="Agk Image Tools" 
-                      SizeToContent="Height"
-                      Width="525"
+                      Height="650"
+                      Width="1100"
                       DataContext="{Binding MainViewModel, Source={StaticResource Locator}}"
                       GlowBrush="Black"
-                      WindowTitleBrush="DarkRed">
+                      WindowTitleBrush="{StaticResource BackgroundBrush1}"
+                      Background="{StaticResource BackgroundBrush1}">
     <Grid>
         <TabControl>
             <TabControl.Items>

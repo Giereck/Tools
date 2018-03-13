@@ -15,7 +15,7 @@
                         <Rectangle Width="40"
                                    Height="40"
                                    Margin="5"
-                                   Fill="DarkSlateGray">
+                                   Fill="{StaticResource FolderBrush}">
                             <Rectangle.OpacityMask>
                                 <VisualBrush Stretch="Uniform" Visual="{DynamicResource appbar_folder}" />
                             </Rectangle.OpacityMask>
