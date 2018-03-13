@@ -5,7 +5,31 @@
              xmlns:view="clr-namespace:ImageTools.View"
              DataContext="{Binding SelectFolderViewModel, Source={StaticResource Locator}}">
     <Grid>
-        <ItemsControl ItemsSource="{Binding Folders}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <StackPanel Grid.Row="0"
+                    Orientation="Horizontal">
+            <Button Style="{DynamicResource MetroCircleButtonStyle}"
+                    ToolTip="Back"
+                    Cursor="Hand"
+                    Height="35"
+                    Width="35"
+                    Command="{Binding NavigateBackCommand}">
+                <Rectangle Height="13"
+                           Width="13"
+                           Fill="{StaticResource IconBrush}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Visual="{DynamicResource appbar_navigate_previous}" Stretch="Uniform" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button>
+        </StackPanel>
+        
+        <ItemsControl Grid.Row="1" 
+                      ItemsSource="{Binding Folders}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel Orientation="Horizontal" />
@@ -23,7 +47,7 @@
                                  IsChecked="{Binding IsSelected, Mode=TwoWay}"
                                  attachedCommandBehavior:CommandBehavior.Event="MouseDoubleClick"
                                  attachedCommandBehavior:CommandBehavior.Command="{Binding DataContext.DrillDownFolderCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:SelectFolderView}}}"
-                                 attachedCommandBehavior:CommandBehavior.CommandParameter="{Binding Path}">
+                                 attachedCommandBehavior:CommandBehavior.CommandParameter="{Binding}">
                         <RadioButton.Template>
                             <ControlTemplate TargetType="RadioButton">
                                 <StackPanel Name="Panel"  

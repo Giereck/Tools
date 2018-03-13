@@ -11,6 +11,8 @@ namespace ImageTools.Utilities
         IList<string> GetJpgFilesFromFolder(string folderPath);
 
         List<Folder> GetSubFolders(string parentFolderPath);
+
+        Folder GetParentFolder(string folderPath);
     }
 
     public class FolderManager : IFolderManager
@@ -34,6 +36,25 @@ namespace ImageTools.Utilities
 
             subFolders.AddRange(Directory.GetDirectories(parentFolderPath).Select(GetFolder));
             return subFolders;
+        }
+
+        public Folder GetParentFolder(string folderPath)
+        {
+            if (folderPath == null) throw new ArgumentNullException(nameof(folderPath));
+
+            Folder parentFolder;
+
+            if (Directory.Exists(folderPath))
+            {
+                var parentDirectory = Directory.GetParent(folderPath);
+                parentFolder = GetFolder(parentDirectory.ToString());
+            }
+            else
+            {
+                parentFolder = Folder.None;
+            }
+
+            return parentFolder;
         }
 
         private Folder GetFolder(string folderPath)

@@ -12,8 +12,7 @@ namespace ImageTools.ViewModel
     public class SelectFolderViewModel : ViewModelBase
     {
         private readonly IFolderManager _folderManager;
-        private string _selectedFolder;
-        //private string _drillDownFolder;
+        private Folder _selectedFolder;
 
         public SelectFolderViewModel(IFolderManager folderManager)
         {
@@ -21,15 +20,18 @@ namespace ImageTools.ViewModel
 
             _folderManager = folderManager;
 
-            DrillDownFolderCommand = new RelayCommand<string>(DrillDownFolderExecuted);
+            DrillDownFolderCommand = new RelayCommand<Folder>(DrillDownFolderExecuted);
+            NavigateBackCommand = new RelayCommand(NavigateBackExecuted, NavigateBackCanExecute);
 
             Folders = new ObservableCollection<Folder>();
-            SelectedFolder = string.Empty;
+            SelectedFolder = Folder.DefaultFolder;
         }
-        
+
         public ICommand DrillDownFolderCommand { get; }
+
+        public ICommand NavigateBackCommand { get; }
         
-        public string SelectedFolder
+        public Folder SelectedFolder
         {
             get { return _selectedFolder; }
             set
@@ -41,29 +43,35 @@ namespace ImageTools.ViewModel
             }
         }
         
-        //public string DrillDownFolder
-        //{
-        //    get { return _drillDownFolder; }
-        //    set { Set(ref _drillDownFolder, value); }
-        //}
-
         public ObservableCollection<Folder> Folders { get; }
 
-        private void LoadFolders(string currentFolder)
+        private void LoadFolders(Folder parentFolder)
         {
             Folders.Clear();
-            foreach (var subFolder in _folderManager.GetSubFolders(currentFolder))
+            foreach (var subFolder in _folderManager.GetSubFolders(parentFolder.Path))
             {
                 Folders.Add(subFolder);
             }
         }
 
-        private void DrillDownFolderExecuted(string folder)
+        private void DrillDownFolderExecuted(Folder folder)
         {
-            if (Directory.Exists(folder))
+            if (Directory.Exists(folder.Path))
             {
                 LoadFolders(folder);
+                SelectedFolder = folder;
             }
+        }
+
+        private bool NavigateBackCanExecute()
+        {
+            return SelectedFolder != null && !string.IsNullOrEmpty(SelectedFolder.ParentFolder.Path);
+        }
+
+        private void NavigateBackExecuted()
+        {
+            LoadFolders(SelectedFolder.ParentFolder);
+            SelectedFolder = SelectedFolder.ParentFolder;
         }
     }
 }

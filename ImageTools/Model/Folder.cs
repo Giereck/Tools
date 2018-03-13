@@ -1,11 +1,16 @@
 ﻿using System;
 using GalaSoft.MvvmLight;
+using ImageTools.Utilities;
 
 namespace ImageTools.Model
 {
     public class Folder : ObservableObject
     {
+        public static Folder DefaultFolder => new Folder("Desktop", Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
+        public static Folder None => new Folder(string.Empty, string.Empty);
+
         private bool _isSelected;
+        private Folder _parentFolder;
 
         public Folder(string name, string path)
         {
@@ -20,6 +25,19 @@ namespace ImageTools.Model
 
         public string Path { get; }
         
+        public Folder ParentFolder
+        {
+            get
+            {
+                if (_parentFolder == null)
+                {
+                    _parentFolder = new FolderManager().GetParentFolder(Path);
+                }
+
+                return _parentFolder;
+            }
+        }
+
         public bool IsSelected
         {
             get { return _isSelected; }
