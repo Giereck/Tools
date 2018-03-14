@@ -34,23 +34,42 @@ namespace ImageTools.Utilities
                 parentFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             }
 
-            subFolders.AddRange(Directory.GetDirectories(parentFolderPath).Select(GetFolder));
+            var accessibleDirectories = DiscardUnauthorizedDirectories(Directory.GetDirectories(parentFolderPath));
+            subFolders.AddRange(accessibleDirectories.Select(ConvertToFolder));
             return subFolders;
         }
 
+        private IList<string> DiscardUnauthorizedDirectories(string[] directoryPaths)
+        {
+            return directoryPaths.Where(HasAccessToDirectory).ToList();
+        }
+        
         public Folder GetParentFolder(string folderPath)
         {
             if (folderPath == null) throw new ArgumentNullException(nameof(folderPath));
 
             var parentDirectory = Directory.GetParent(folderPath);
 
-            var parentFolder = parentDirectory == null ? Folder.None : GetFolder(parentDirectory.ToString());
+            var parentFolder = parentDirectory == null ? Folder.None : ConvertToFolder(parentDirectory.ToString());
             return parentFolder;
         }
 
-        private Folder GetFolder(string folderPath)
+        private Folder ConvertToFolder(string folderPath)
         {
-            return new Folder(Path.GetFileNameWithoutExtension(folderPath), folderPath);
+            return new Folder(Path.GetFileName(folderPath), folderPath);
+        }
+
+        private bool HasAccessToDirectory(string directoryPath)
+        {
+            try
+            {
+                Directory.GetDirectories(directoryPath);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

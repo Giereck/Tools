@@ -4,6 +4,14 @@
              xmlns:attachedCommandBehavior="clr-namespace:AttachedCommandBehavior;assembly=AttachedCommandBehavior"
              xmlns:view="clr-namespace:ImageTools.View"
              DataContext="{Binding SelectFolderViewModel, Source={StaticResource Locator}}">
+    <UserControl.Resources>
+        <Style x:Key="ButtonTextStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+        </Style>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -26,6 +34,45 @@
                     </Rectangle.OpacityMask>
                 </Rectangle>
             </Button>
+            
+            <ItemsControl Margin="10,0"
+                          ItemsSource="{Binding Breadcrumbs}"
+                          VerticalAlignment="Center">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Cursor="Hand"
+                                    Command="{Binding DataContext.NavigateToBreadcrumbCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:SelectFolderView}}}"
+                                    CommandParameter="{Binding}">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Name="Panel"
+                                                Height="20"
+                                                Padding="2,0"
+                                                Background="Transparent">
+                                            <TextBlock Style="{StaticResource ButtonTextStyle}"
+                                                       VerticalAlignment="Center"
+                                                       Text="{Binding Name}" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Panel" Property="Background" Value="{StaticResource IconBrush}" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <TextBlock VerticalAlignment="Center" Text="\" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            
         </StackPanel>
         
         <ItemsControl Grid.Row="1" 
@@ -62,10 +109,7 @@
                                             <VisualBrush Stretch="Uniform" Visual="{DynamicResource appbar_folder}" />
                                         </Rectangle.OpacityMask>
                                     </Rectangle>
-                                    <TextBlock FontSize="12"
-                                               FontFamily="Segoe UI"
-                                               FontWeight="Normal"
-                                               Foreground="{StaticResource TextBrush}"
+                                    <TextBlock Style="{StaticResource ButtonTextStyle}" 
                                                Margin="5"
                                                HorizontalAlignment="Center"
                                                Text="{Binding Name}"

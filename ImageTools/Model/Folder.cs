@@ -6,7 +6,8 @@ namespace ImageTools.Model
 {
     public class Folder : ObservableObject
     {
-        public static Folder DefaultFolder => new Folder("Desktop", Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
+        public static Folder Root => new Folder(@"C:\", @"c:\");
+        public static Folder Default => new Folder("Desktop", Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
         public static Folder None => new Folder(string.Empty, string.Empty);
 
         private bool _isSelected;

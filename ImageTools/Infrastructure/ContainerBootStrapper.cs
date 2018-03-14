@@ -11,6 +11,7 @@ namespace ImageTools.Infrastructure
         public void RegisterContainer(IWindsorContainer container)
         {
             container.Register(Component.For<ViewModelLocator>().Instance(new ViewModelLocator(container)));
+            container.Register(Component.For<IBreadcrumbGenerator>().ImplementedBy<BreadcrumbGenerator>());
             container.Register(Component.For<IFolderManager>().ImplementedBy<FolderManager>());
             container.Register(Component.For<IEquipmentDetector>().ImplementedBy<EquipmentDetector>());
             container.Register(Component.For<IImagePropertyExtractor>().ImplementedBy<ImagePropertyExtractor>());

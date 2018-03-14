@@ -106,6 +106,7 @@
     <Compile Include="Renamer\FormatFileNameGenerator.cs" />
     <Compile Include="Renamer\IFileNameGenerator.cs" />
     <Compile Include="Renamer\ImitatingFileNameGenerator.cs" />
+    <Compile Include="Utilities\BreadcrumbGenerator.cs" />
     <Compile Include="Utilities\EquipmentDetector.cs" />
     <Compile Include="Utilities\FolderManager.cs" />
     <Compile Include="Utilities\ImageOptions.cs" />
