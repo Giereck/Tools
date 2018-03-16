@@ -3,133 +3,172 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:attachedCommandBehavior="clr-namespace:AttachedCommandBehavior;assembly=AttachedCommandBehavior"
              xmlns:view="clr-namespace:ImageTools.View"
+             xmlns:converters="clr-namespace:ImageTools.Infrastructure.Converters"
              DataContext="{Binding SelectFolderViewModel, Source={StaticResource Locator}}">
     <UserControl.Resources>
+        
+        <converters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
+
         <Style x:Key="ButtonTextStyle" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="Segoe UI" />
             <Setter Property="FontWeight" Value="Normal" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
         </Style>
+
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="3*" />
         </Grid.RowDefinitions>
-        
-        <StackPanel Grid.Row="0"
-                    Orientation="Horizontal">
-            <Button Style="{DynamicResource MetroCircleButtonStyle}"
-                    ToolTip="Back"
-                    Cursor="Hand"
-                    Height="35"
-                    Width="35"
-                    Command="{Binding NavigateBackCommand}">
-                <Rectangle Height="13"
-                           Width="13"
-                           Fill="{StaticResource IconBrush}">
-                    <Rectangle.OpacityMask>
-                        <VisualBrush Visual="{DynamicResource appbar_navigate_previous}" Stretch="Uniform" />
-                    </Rectangle.OpacityMask>
-                </Rectangle>
-            </Button>
-            
-            <ItemsControl Margin="10,0"
-                          ItemsSource="{Binding Breadcrumbs}"
-                          VerticalAlignment="Center">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <Button Cursor="Hand"
-                                    Command="{Binding DataContext.NavigateToBreadcrumbCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:SelectFolderView}}}"
-                                    CommandParameter="{Binding}">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Name="Panel"
-                                                Height="20"
-                                                Padding="2,0"
-                                                Background="Transparent">
-                                            <TextBlock Style="{StaticResource ButtonTextStyle}"
-                                                       VerticalAlignment="Center"
-                                                       Text="{Binding Name}" />
-                                        </Border>
+        <Grid Background="Transparent">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.InputBindings>
+                <MouseBinding MouseAction="LeftClick" Command="{Binding DeselectFolderCommand}" />
+            </Grid.InputBindings>
+
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <Button Width="35"
+                        Height="35"
+                        Command="{Binding NavigateBackCommand}"
+                        Cursor="Hand"
+                        Style="{DynamicResource MetroCircleButtonStyle}"
+                        ToolTip="Back">
+                    <Rectangle Width="13"
+                               Height="13"
+                               Fill="{StaticResource IconBrush}">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Stretch="Uniform" Visual="{DynamicResource appbar_navigate_previous}" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button>
+
+                <ItemsControl Margin="10,0"
+                              VerticalAlignment="Center"
+                              ItemsSource="{Binding Breadcrumbs}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Command="{Binding DataContext.NavigateToBreadcrumbCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:SelectFolderView}}}"
+                                        CommandParameter="{Binding}"
+                                        Cursor="Hand">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Name="Panel"
+                                                    Height="20"
+                                                    Padding="2,0"
+                                                    Background="Transparent">
+                                                <TextBlock VerticalAlignment="Center"
+                                                           Style="{StaticResource ButtonTextStyle}"
+                                                           Text="{Binding Name}" />
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Panel" Property="Background" Value="{StaticResource IconBrush}" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                                <TextBlock VerticalAlignment="Center" Text="\" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+            <ScrollViewer Grid.Row="1"
+                          MaxHeight="300"
+                          VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding Folders}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" Background="Transparent">
+                                <WrapPanel.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" Command="{Binding DeselectFolderCommand}" />
+                                </WrapPanel.InputBindings>
+                            </WrapPanel>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Margin" Value="5" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <RadioButton attachedCommandBehavior:CommandBehavior.Command="{Binding DataContext.DrillDownFolderCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:SelectFolderView}}}"
+                                         attachedCommandBehavior:CommandBehavior.CommandParameter="{Binding}"
+                                         attachedCommandBehavior:CommandBehavior.Event="MouseDoubleClick"
+                                         Command="{Binding DataContext.SetSelectedFolderCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:SelectFolderView}}}"
+                                         CommandParameter="{Binding}"
+                                         Cursor="Hand"
+                                         GroupName="FolderSelection"
+                                         IsChecked="{Binding IsSelected, Mode=TwoWay}">
+                                <RadioButton.Template>
+                                    <ControlTemplate TargetType="RadioButton">
+                                        <StackPanel Name="Panel"
+                                                    Width="100"
+                                                    Background="{StaticResource BackgroundBrush1}"
+                                                    Orientation="Vertical">
+                                            <Rectangle Width="40"
+                                                       Height="40"
+                                                       Margin="0,5,0,0"
+                                                       Fill="{StaticResource FolderBrush}">
+                                                <Rectangle.OpacityMask>
+                                                    <VisualBrush Stretch="Uniform" Visual="{DynamicResource appbar_folder}" />
+                                                </Rectangle.OpacityMask>
+                                            </Rectangle>
+                                            <TextBlock Margin="5"
+                                                       HorizontalAlignment="Center"
+                                                       Style="{StaticResource ButtonTextStyle}"
+                                                       Text="{Binding Name}"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="Panel" Property="Background" Value="{StaticResource IconBrush}" />
+                                                <Setter TargetName="Panel" Property="Background" Value="{StaticResource BackgroundBrush2}" />
                                             </Trigger>
+                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                <Setter TargetName="Panel" Property="Background" Value="{StaticResource IconBrush}" />
+                                            </DataTrigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
-                                </Button.Template>
-                            </Button>
-                            <TextBlock VerticalAlignment="Center" Text="\" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-            
-        </StackPanel>
-        
-        <ItemsControl Grid.Row="1" 
-                      ItemsSource="{Binding Folders}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemContainerStyle>
-                <Style TargetType="ContentPresenter">
-                    <Setter Property="Margin" Value="5" />
-                </Style>
-            </ItemsControl.ItemContainerStyle>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <RadioButton Cursor="Hand"
-                                 GroupName="FolderSelection"
-                                 IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                 attachedCommandBehavior:CommandBehavior.Event="MouseDoubleClick"
-                                 attachedCommandBehavior:CommandBehavior.Command="{Binding DataContext.DrillDownFolderCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:SelectFolderView}}}"
-                                 attachedCommandBehavior:CommandBehavior.CommandParameter="{Binding}">
-                        <RadioButton.Template>
-                            <ControlTemplate TargetType="RadioButton">
-                                <StackPanel Name="Panel"  
-                                            Width="100"
-                                            Background="{StaticResource BackgroundBrush1}"
-                                            Orientation="Vertical">
-                                    <Rectangle Width="40"
-                                               Height="40"
-                                               Margin="0,5,0,0"
-                                               Fill="{StaticResource FolderBrush}">
-                                        <Rectangle.OpacityMask>
-                                            <VisualBrush Stretch="Uniform" Visual="{DynamicResource appbar_folder}" />
-                                        </Rectangle.OpacityMask>
-                                    </Rectangle>
-                                    <TextBlock Style="{StaticResource ButtonTextStyle}" 
-                                               Margin="5"
-                                               HorizontalAlignment="Center"
-                                               Text="{Binding Name}"
-                                               TextWrapping="Wrap" />
-                                </StackPanel>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="Panel" Property="Background" Value="{StaticResource BackgroundBrush2}" />
-                                    </Trigger>
-                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                        <Setter TargetName="Panel" Property="Background" Value="{StaticResource IconBrush}" />
-                                    </DataTrigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </RadioButton.Template>
-
-                    </RadioButton>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-
+                                </RadioButton.Template>
+                            </RadioButton>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+        <Grid Grid.Row="1" Background="Transparent">
+            <Grid.InputBindings>
+                <MouseBinding MouseAction="LeftClick" Command="{Binding DeselectFolderCommand}" />
+            </Grid.InputBindings>
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Orientation="Vertical">
+                <Button Command="{Binding UseFolderCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Content" Value="Use selected folder" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedFolder, Converter={StaticResource NullToBooleanConverter}}" Value="True">
+                                    <Setter Property="Content" Value="Use current folder" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

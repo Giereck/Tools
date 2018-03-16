@@ -100,6 +100,7 @@
     <Compile Include="Compressor\JpgCompressor.cs" />
     <Compile Include="Infrastructure\Container.cs" />
     <Compile Include="Infrastructure\ContainerBootStrapper.cs" />
+    <Compile Include="Infrastructure\Converters\NullToBooleanConverter.cs" />
     <Compile Include="Infrastructure\ObservableCollectionExtensions.cs" />
     <Compile Include="Model\Equipment.cs" />
     <Compile Include="Model\Folder.cs" />

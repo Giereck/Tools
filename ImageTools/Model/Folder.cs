@@ -24,8 +24,27 @@ namespace ImageTools.Model
 
         public string Name { get; }
 
-        public string Path { get; }
-        
+        private string _path;
+        public string Path
+        {
+            get { return _path; }
+            private set
+            {
+                if (IsRootFolderPath(value) && !value.EndsWith("\\"))
+                {
+                    value += @"\";
+                }
+
+                _path = value;
+            }
+        }
+
+        private bool IsRootFolderPath(string folderPath)
+        {
+            var value = folderPath.Replace(":", "").Replace("\\","").ToLower();
+            return value.Length == 1;
+        }
+
         public Folder ParentFolder
         {
             get

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -14,6 +15,7 @@ namespace ImageTools.ViewModel
     {
         private readonly IBreadcrumbGenerator _breadcrumbGenerator;
         private readonly IFolderManager _folderManager;
+        private Folder _currentFolder;
         private Folder _selectedFolder;
 
         public SelectFolderViewModel(IBreadcrumbGenerator breadcrumbGenerator, IFolderManager folderManager)
@@ -27,10 +29,13 @@ namespace ImageTools.ViewModel
             DrillDownFolderCommand = new RelayCommand<Folder>(DrillDownFolderExecuted);
             NavigateBackCommand = new RelayCommand(NavigateBackExecuted, NavigateBackCanExecute);
             NavigateToBreadcrumbCommand = new RelayCommand<Folder>(NavigateToBreadcrumbExecuted);
+            SetSelectedFolderCommand = new RelayCommand<Folder>(SetSelectedFolderExecuted);
+            DeselectFolderCommand = new RelayCommand(DeselectFolderExecuted);
+            UseFolderCommand = new RelayCommand(UseFolderExecuted);
 
             Breadcrumbs = new ObservableCollection<Folder>();
             Folders = new ObservableCollection<Folder>();
-            SelectedFolder = Folder.Default;
+            CurrentFolder = Folder.Default;
         }
         
         public ICommand DrillDownFolderCommand { get; }
@@ -38,18 +43,30 @@ namespace ImageTools.ViewModel
         public ICommand NavigateBackCommand { get; }
 
         public ICommand NavigateToBreadcrumbCommand { get; }
+
+        public ICommand SetSelectedFolderCommand { get; }
+
+        public ICommand DeselectFolderCommand { get; }
+        
+        public ICommand UseFolderCommand { get; }
+
+        public Folder CurrentFolder
+        {
+            get { return _currentFolder; }
+            set
+            {
+                if (Set(ref _currentFolder, value))
+                {
+                    LoadFolders(_currentFolder.Path);
+                    LoadBreadcrumbs(_currentFolder);
+                }
+            }
+        }
         
         public Folder SelectedFolder
         {
             get { return _selectedFolder; }
-            set
-            {
-                if (Set(ref _selectedFolder, value))
-                {
-                    LoadFolders(_selectedFolder.Path);
-                    LoadBreadcrumbs(_selectedFolder);
-                }
-            }
+            set { Set(ref _selectedFolder, value); }
         }
 
         public ObservableCollection<Folder> Breadcrumbs { get; } 
@@ -75,23 +92,46 @@ namespace ImageTools.ViewModel
         {
             if (Directory.Exists(folder.Path))
             {
-                SelectedFolder = folder;
+                CurrentFolder = folder;
             }
         }
 
         private bool NavigateBackCanExecute()
         {
-            return SelectedFolder != null && !string.IsNullOrEmpty(SelectedFolder.ParentFolder.Path);
+            return CurrentFolder != null && !string.IsNullOrEmpty(CurrentFolder.ParentFolder.Path);
         }
 
         private void NavigateBackExecuted()
         {
-            SelectedFolder = SelectedFolder.ParentFolder;
+            CurrentFolder = CurrentFolder.ParentFolder;
         }
 
         private void NavigateToBreadcrumbExecuted(Folder folder)
         {
+            CurrentFolder = folder;
+        }
+
+        private void SetSelectedFolderExecuted(Folder folder)
+        {
             SelectedFolder = folder;
+        }
+
+        private void DeselectFolderExecuted()
+        {
+            var selectedFolder = Folders.FirstOrDefault(f => f.IsSelected);
+
+            if (selectedFolder != null)
+            {
+                selectedFolder.IsSelected = false;
+            }
+
+            SelectedFolder = null;
+        }
+
+        private void UseFolderExecuted()
+        {
+            var selectedFolder = Folders.FirstOrDefault(f => f.IsSelected);
+            SelectedFolder = selectedFolder ?? CurrentFolder;
         }
     }
 }
