@@ -5,7 +5,9 @@ using System.Linq;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Messaging;
 using ImageTools.Infrastructure;
+using ImageTools.Infrastructure.Messages;
 using ImageTools.Model;
 using ImageTools.Utilities;
 
@@ -15,16 +17,17 @@ namespace ImageTools.ViewModel
     {
         private readonly IBreadcrumbGenerator _breadcrumbGenerator;
         private readonly IFolderManager _folderManager;
+        private readonly IMessenger _messenger;
+        private FolderType _currentFolderType;
+        private string _title;
         private Folder _currentFolder;
         private Folder _selectedFolder;
 
-        public SelectFolderViewModel(IBreadcrumbGenerator breadcrumbGenerator, IFolderManager folderManager)
+        public SelectFolderViewModel(IBreadcrumbGenerator breadcrumbGenerator, IFolderManager folderManager, IMessenger messenger)
         {
-            if (breadcrumbGenerator == null) throw new ArgumentNullException(nameof(breadcrumbGenerator));
-            if (folderManager == null) throw new ArgumentNullException(nameof(folderManager));
-
-            _breadcrumbGenerator = breadcrumbGenerator;
-            _folderManager = folderManager;
+            _breadcrumbGenerator = breadcrumbGenerator ?? throw new ArgumentNullException(nameof(breadcrumbGenerator));
+            _folderManager = folderManager ?? throw new ArgumentNullException(nameof(folderManager));
+            _messenger = messenger;
 
             DrillDownFolderCommand = new RelayCommand<Folder>(DrillDownFolderExecuted);
             NavigateBackCommand = new RelayCommand(NavigateBackExecuted, NavigateBackCanExecute);
@@ -36,6 +39,8 @@ namespace ImageTools.ViewModel
             Breadcrumbs = new ObservableCollection<Folder>();
             Folders = new ObservableCollection<Folder>();
             CurrentFolder = Folder.Default;
+
+            messenger.Register<SetFolderTypeModeMessage>(this, SetFolderTypeMessageHandler);
         }
         
         public ICommand DrillDownFolderCommand { get; }
@@ -49,6 +54,18 @@ namespace ImageTools.ViewModel
         public ICommand DeselectFolderCommand { get; }
         
         public ICommand UseFolderCommand { get; }
+        
+        public FolderType CurrentFolderType
+        {
+            get { return _currentFolderType; }
+            set { Set(ref _currentFolderType, value); }
+        }
+
+        public string Title
+        {
+            get { return _title; }
+            set { Set(ref _title, value); }
+        }
 
         public Folder CurrentFolder
         {
@@ -132,6 +149,40 @@ namespace ImageTools.ViewModel
         {
             var selectedFolder = Folders.FirstOrDefault(f => f.IsSelected);
             SelectedFolder = selectedFolder ?? CurrentFolder;
+
+            SendFolderSelectedMessage();
+        }
+
+        private void SendFolderSelectedMessage()
+        {
+            _messenger.Send(new FolderSelectedMessage(CurrentFolderType, SelectedFolder.Path));
+        }
+
+        private void SetFolderTypeMessageHandler(SetFolderTypeModeMessage message)
+        {
+            CurrentFolderType = message.FolderType;
+            Reset();
+            SetTitle();
+        }
+
+        private void Reset()
+        {
+            CurrentFolder = Folder.Default;
+        }
+
+        private void SetTitle()
+        {
+            switch (CurrentFolderType)
+            {
+                case FolderType.Source:
+                    Title = "Select source folder";
+                    break;
+                case FolderType.Target:
+                    Title = "Select target folder";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }

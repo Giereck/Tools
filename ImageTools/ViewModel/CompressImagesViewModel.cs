@@ -7,8 +7,10 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Messaging;
 using ImageTools.Compressor;
 using ImageTools.Infrastructure;
+using ImageTools.Infrastructure.Messages;
 using ImageTools.Model;
 using ImageTools.Renamer;
 using ImageTools.Utilities;
@@ -29,7 +31,7 @@ namespace ImageTools.ViewModel
         private int _numberOfCompressedImages;
         private bool _isCompressing;
 
-        public CompressImagesViewModel(IFolderManager folderManager, IEquipmentDetector equipmentDetector)
+        public CompressImagesViewModel(IFolderManager folderManager, IEquipmentDetector equipmentDetector, IMessenger messenger)
         {
             if (folderManager == null) throw new ArgumentNullException(nameof(folderManager));
             if (equipmentDetector == null) throw new ArgumentNullException(nameof(equipmentDetector));
@@ -46,8 +48,10 @@ namespace ImageTools.ViewModel
             CompressImagesCommand = new RelayCommand(CompressImagesExecute, CompressImagesCanExecute);
 
             DetectedSourceEquipmentList = new ObservableCollection<Equipment>();
-        }
 
+            messenger.Register<FolderSelectedMessage>(this, FolderSelectedMessageHandler);
+        }
+        
         public List<long> QualityValues => new List<long> {50, 60, 70, 80, 90, 100};
 
         public ICommand SelectSourceFolderCommand { get; }
@@ -254,6 +258,21 @@ namespace ImageTools.ViewModel
         {
             DetectedSourceEquipmentList.Clear();
             DetectedSourceEquipmentList.AddRange(_equipmentDetector.DetectEquipment(_sourceFolder));
+        }
+
+        private void FolderSelectedMessageHandler(FolderSelectedMessage message)
+        {
+            switch (message.FolderType)
+            {
+                case FolderType.Source:
+                    SourceFolder = message.FolderPath;
+                    break;
+                case FolderType.Target:
+                    TargetFolder = message.FolderPath;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }

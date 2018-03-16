@@ -1,5 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using GalaSoft.MvvmLight.Messaging;
 using ImageTools.Renamer;
 using ImageTools.Utilities;
 using ImageTools.ViewModel;
@@ -10,6 +11,7 @@ namespace ImageTools.Infrastructure
     {
         public void RegisterContainer(IWindsorContainer container)
         {
+            container.Register(Component.For<IMessenger>().Instance(Messenger.Default));
             container.Register(Component.For<ViewModelLocator>().Instance(new ViewModelLocator(container)));
             container.Register(Component.For<IBreadcrumbGenerator>().ImplementedBy<BreadcrumbGenerator>());
             container.Register(Component.For<IFolderManager>().ImplementedBy<FolderManager>());

@@ -4,7 +4,8 @@
              xmlns:attachedCommandBehavior="clr-namespace:AttachedCommandBehavior;assembly=AttachedCommandBehavior"
              xmlns:view="clr-namespace:ImageTools.View"
              xmlns:converters="clr-namespace:ImageTools.Infrastructure.Converters"
-             DataContext="{Binding SelectFolderViewModel, Source={StaticResource Locator}}">
+             DataContext="{Binding SelectFolderViewModel, Source={StaticResource Locator}}"
+             Background="{StaticResource BackgroundBrush3}">
     <UserControl.Resources>
         
         <converters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
@@ -17,12 +18,19 @@
         </Style>
 
     </UserControl.Resources>
-    <Grid>
+    <Grid Margin="10">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="3*" />
         </Grid.RowDefinitions>
-        <Grid Background="Transparent">
+
+        <TextBlock FontSize="20"
+                   Foreground="{StaticResource TextBrush}"
+                   Margin="0,0,0,10" 
+                   Text="{Binding DataContext.Title, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:SelectFolderView}}}" />
+
+        <Grid Grid.Row="1" Background="Transparent">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -79,7 +87,7 @@
                                         </ControlTemplate>
                                     </Button.Template>
                                 </Button>
-                                <TextBlock VerticalAlignment="Center" Text="\" />
+                                <TextBlock VerticalAlignment="Center" Text="\" Foreground="{StaticResource TextBrush}" />
                             </StackPanel>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -149,13 +157,14 @@
                 </ItemsControl>
             </ScrollViewer>
         </Grid>
-        <Grid Grid.Row="1" Background="Transparent">
+        <Grid Grid.Row="2" Background="Transparent">
             <Grid.InputBindings>
                 <MouseBinding MouseAction="LeftClick" Command="{Binding DeselectFolderCommand}" />
             </Grid.InputBindings>
             <StackPanel HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Orientation="Vertical">
+
                 <Button Command="{Binding UseFolderCommand}">
                     <Button.Style>
                         <Style TargetType="Button">

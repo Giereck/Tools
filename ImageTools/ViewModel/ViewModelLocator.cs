@@ -12,12 +12,12 @@ namespace ImageTools.ViewModel
 
         public ViewModelLocator(IWindsorContainer container)
         {
-            container.Register(Component.For<MainViewModel>());
+            container.Register(Component.For<MainWindowViewModel>());
             container.Register(Component.For<CompressImagesViewModel>());
             container.Register(Component.For<SelectFolderViewModel>());
         }
 
-        public MainViewModel MainViewModel => Container.Resolve<MainViewModel>();
+        public MainWindowViewModel MainWindowViewModel => Container.Resolve<MainWindowViewModel>();
 
         public CompressImagesViewModel CompressImagesViewModel => Container.Resolve<CompressImagesViewModel>();
 

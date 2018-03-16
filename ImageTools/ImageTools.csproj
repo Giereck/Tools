@@ -101,9 +101,14 @@
     <Compile Include="Infrastructure\Container.cs" />
     <Compile Include="Infrastructure\ContainerBootStrapper.cs" />
     <Compile Include="Infrastructure\Converters\NullToBooleanConverter.cs" />
+    <Compile Include="Infrastructure\Messages\FolderSelectedMessage.cs" />
+    <Compile Include="Infrastructure\Messages\SetFolderTypeModeMessage.cs" />
+    <Compile Include="Infrastructure\Messages\SourceFolderSelectedMessage.cs" />
+    <Compile Include="Infrastructure\Messages\TargetFolderSelectedMessage.cs" />
     <Compile Include="Infrastructure\ObservableCollectionExtensions.cs" />
     <Compile Include="Model\Equipment.cs" />
     <Compile Include="Model\Folder.cs" />
+    <Compile Include="Model\FolderType.cs" />
     <Compile Include="Renamer\FormatFileNameGenerator.cs" />
     <Compile Include="Renamer\IFileNameGenerator.cs" />
     <Compile Include="Renamer\ImitatingFileNameGenerator.cs" />
@@ -113,7 +118,7 @@
     <Compile Include="Utilities\ImageOptions.cs" />
     <Compile Include="Utilities\ImagePropertyExtractor.cs" />
     <Compile Include="ViewModel\CompressImagesViewModel.cs" />
-    <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\SelectFolderViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\CompressImagesView.xaml.cs">

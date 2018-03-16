@@ -1,13 +1,16 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Style TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
+    <!--<Style TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
         <Setter Property="Background" Value="{StaticResource BackgroundBrush3}" />
     </Style>
 
     <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
         <Setter Property="Background" Value="{StaticResource BackgroundBrush1}" />
-    </Style>
+    </Style>-->
 
+    <Style TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+    </Style>
 
 </ResourceDictionary>
