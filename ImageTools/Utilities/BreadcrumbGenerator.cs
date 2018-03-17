@@ -24,18 +24,22 @@ namespace ImageTools.Utilities
             else
             {
                 var folderNames = folderPath.Split("\\".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                
-                for (int i = 0; i < folderNames.Length; i++)
-                {
-                    List<string> pathParts = new List<string>();
+                breadcrumbs.AddRange(GenerateBreadcrumbsFromFolderNames(folderNames));
+            }
 
-                    for (int j = 0; j <= i; j++)
-                    {
-                        pathParts.Add(folderNames[j]);
-                    }
+            return breadcrumbs;
+        }
 
-                    breadcrumbs.Add(new Folder(pathParts.Last(), string.Join("\\", pathParts)));
-                }
+        private IEnumerable<Folder> GenerateBreadcrumbsFromFolderNames(string[] folderNames)
+        {
+            var breadcrumbs = new List<Folder>();
+
+            for (int i = 1; i <= folderNames.Length; i++)
+            {
+                var batch = folderNames.Take(i).ToList();
+                var aggregate = batch.Aggregate((a, b) => a + "\\" + b);
+
+                breadcrumbs.Add(new Folder(batch.Last(), aggregate));
             }
 
             return breadcrumbs;
