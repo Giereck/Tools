@@ -37,9 +37,9 @@ namespace ImageTools.Utilities
             for (int i = 1; i <= folderNames.Length; i++)
             {
                 var batch = folderNames.Take(i).ToList();
-                var aggregate = batch.Aggregate((a, b) => a + "\\" + b);
+                var aggregateResult = batch.Aggregate((a, b) => a + "\\" + b);
 
-                breadcrumbs.Add(new Folder(batch.Last(), aggregate));
+                breadcrumbs.Add(new Folder(batch.Last(), aggregateResult));
             }
 
             return breadcrumbs;
