@@ -14,11 +14,25 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </controls:MetroWindow.Resources>
     <Grid>
-        <Grid>
-            <view:SelectFolderView Visibility="{Binding DataContext.IsSelectSourceFolderVisible, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:MetroWindow}}}" />
-            <!--<view:SelectFolderView Title="Select target folder" Visibility="{Binding DataContext.IsSelectTargetFolderVisible, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:MetroWindow}}}" />-->
-            <view:CompressImagesView Visibility="{Binding DataContext.IsCompressImagesVisible, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:MetroWindow}}}" />
-        </Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+            <Expander Grid.Row="0" Header="Select source folder" IsExpanded="True">
+                <view:SelectFolderView Title="Select source folder" FolderType="Source" />
+        </Expander>
+        
+        <Expander Grid.Row="1" Header="Select target folder" IsExpanded="False">
+            <view:SelectFolderView Title="Select target folder" FolderType="Target" />
+        </Expander>
+
+        <view:CompressImagesView Grid.Row="2" />
+
+
+        <!--<view:SelectFolderView Title="Select target folder" Visibility="{Binding DataContext.IsSelectTargetFolderVisible, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:MetroWindow}}}" />-->
+            
+        
     </Grid>
 </controls:MetroWindow>
 

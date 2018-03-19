@@ -19,7 +19,7 @@ namespace ImageTools.ViewModel
         private readonly IFolderManager _folderManager;
         private readonly IMessenger _messenger;
         private FolderType _currentFolderType;
-        private string _title;
+        //private string _title;
         private Folder _currentFolder;
         private Folder _selectedFolder;
 
@@ -40,7 +40,7 @@ namespace ImageTools.ViewModel
             Folders = new ObservableCollection<Folder>();
             CurrentFolder = Folder.Default;
 
-            messenger.Register<SetFolderTypeModeMessage>(this, SetFolderTypeMessageHandler);
+            //messenger.Register<SetFolderTypeModeMessage>(this, SetFolderTypeMessageHandler);
         }
         
         public ICommand DrillDownFolderCommand { get; }
@@ -54,18 +54,20 @@ namespace ImageTools.ViewModel
         public ICommand DeselectFolderCommand { get; }
         
         public ICommand UseFolderCommand { get; }
-        
-        public FolderType CurrentFolderType
-        {
-            get { return _currentFolderType; }
-            set { Set(ref _currentFolderType, value); }
-        }
 
-        public string Title
-        {
-            get { return _title; }
-            set { Set(ref _title, value); }
-        }
+        public FolderType CurrentFolderType { get; set; }
+
+        //public FolderType CurrentFolderType
+        //{
+        //    get { return _currentFolderType; }
+        //    set { Set(ref _currentFolderType, value); }
+        //}
+
+        //public string Title
+        //{
+        //    get { return _title; }
+        //    set { Set(ref _title, value); }
+        //}
 
         public Folder CurrentFolder
         {
@@ -162,7 +164,7 @@ namespace ImageTools.ViewModel
         {
             CurrentFolderType = message.FolderType;
             Reset();
-            SetTitle();
+            //SetTitle();
         }
 
         private void Reset()
@@ -170,19 +172,19 @@ namespace ImageTools.ViewModel
             CurrentFolder = Folder.Default;
         }
 
-        private void SetTitle()
-        {
-            switch (CurrentFolderType)
-            {
-                case FolderType.Source:
-                    Title = "Select source folder";
-                    break;
-                case FolderType.Target:
-                    Title = "Select target folder";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
+        //private void SetTitle()
+        //{
+        //    switch (CurrentFolderType)
+        //    {
+        //        case FolderType.Source:
+        //            Title = "Select source folder";
+        //            break;
+        //        case FolderType.Target:
+        //            Title = "Select target folder";
+        //            break;
+        //        default:
+        //            throw new ArgumentOutOfRangeException();
+        //    }
+        //}
     }
 }

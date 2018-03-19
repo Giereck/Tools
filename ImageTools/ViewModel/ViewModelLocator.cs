@@ -14,7 +14,7 @@ namespace ImageTools.ViewModel
         {
             container.Register(Component.For<MainWindowViewModel>());
             container.Register(Component.For<CompressImagesViewModel>());
-            container.Register(Component.For<SelectFolderViewModel>());
+            container.Register(Component.For<SelectFolderViewModel>().LifestyleTransient());
         }
 
         public MainWindowViewModel MainWindowViewModel => Container.Resolve<MainWindowViewModel>();

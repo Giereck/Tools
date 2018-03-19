@@ -28,7 +28,7 @@
         <TextBlock FontSize="20"
                    Foreground="{StaticResource TextBrush}"
                    Margin="0,0,0,10" 
-                   Text="{Binding DataContext.Title, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:SelectFolderView}}}" />
+                   Text="{Binding Title, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:SelectFolderView}}}" />
 
         <Grid Grid.Row="1" Background="Transparent">
             <Grid.RowDefinitions>
@@ -119,7 +119,7 @@
                                          Command="{Binding DataContext.SetSelectedFolderCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:SelectFolderView}}}"
                                          CommandParameter="{Binding}"
                                          Cursor="Hand"
-                                         GroupName="FolderSelection"
+                                         GroupName="{Binding RadioButtonGroup, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:SelectFolderView}}}"
                                          IsChecked="{Binding IsSelected, Mode=TwoWay}">
                                 <RadioButton.Template>
                                     <ControlTemplate TargetType="RadioButton">

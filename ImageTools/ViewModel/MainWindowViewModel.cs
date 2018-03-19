@@ -8,8 +8,8 @@ namespace ImageTools.ViewModel
     public class MainWindowViewModel : ViewModelBase
     {
         private readonly IMessenger _messenger;
-        private bool _isSelectSourceFolderVisible;
-        private bool _isSelectTargetFolderVisible;
+        private bool _isSelectSourceFolderExpanded;
+        private bool _isSelectTargetFolderExpanded;
         private bool _isCompressImagesVisible;
 
         public MainWindowViewModel(IMessenger messenger)
@@ -19,25 +19,25 @@ namespace ImageTools.ViewModel
             //messenger.Register<TargetFolderSelectedMessage>(this, TargetFolderSelectedMessageHandler);
             messenger.Register<FolderSelectedMessage>(this, FolderSelectedMessageHandler);
 
-            IsSelectSourceFolderVisible = true;
-            //IsSelectTargetFolderVisible = false;
+            IsSelectSourceFolderExpanded = true;
+            IsSelectTargetFolderExpanded = false;
             IsCompressImagesVisible = false;
 
-            messenger.Send(new SetFolderTypeModeMessage(FolderType.Source));
+            //messenger.Send(new SetFolderTypeModeMessage(FolderType.Source));
         }
         
-        public bool IsSelectSourceFolderVisible
+        public bool IsSelectSourceFolderExpanded
         {
-            get { return _isSelectSourceFolderVisible; }
-            set { Set(ref _isSelectSourceFolderVisible, value); }
+            get { return _isSelectSourceFolderExpanded; }
+            set { Set(ref _isSelectSourceFolderExpanded, value); }
         }
-        
-        //public bool IsSelectTargetFolderVisible
-        //{
-        //    get { return _isSelectTargetFolderVisible; }
-        //    set { Set(ref _isSelectTargetFolderVisible, value); }
-        //}
-        
+
+        public bool IsSelectTargetFolderExpanded
+        {
+            get { return _isSelectTargetFolderExpanded; }
+            set { Set(ref _isSelectTargetFolderExpanded, value); }
+        }
+
         public bool IsCompressImagesVisible
         {
             get { return _isCompressImagesVisible; }
@@ -51,21 +51,21 @@ namespace ImageTools.ViewModel
                 _messenger.Send(new SetFolderTypeModeMessage(FolderType.Target));
             }
 
-            IsCompressImagesVisible = message.FolderType == FolderType.Target;
-            IsSelectSourceFolderVisible = !IsCompressImagesVisible;
+            //IsCompressImagesVisible = message.FolderType == FolderType.Target;
+            //IsSelectSourceFolderExpanded = !IsCompressImagesVisible;
         }
 
         //private void SourceFolderSelectedMessageHandler(SourceFolderSelectedMessage message)
         //{
-        //    IsSelectSourceFolderVisible = false;
-        //    IsSelectTargetFolderVisible = true;
+        //    IsSelectSourceFolderExpanded = false;
+        //    IsSelectTargetFolderExpanded = true;
         //    IsCompressImagesVisible = false;
         //}
 
         //private void TargetFolderSelectedMessageHandler(TargetFolderSelectedMessage message)
         //{
-        //    IsSelectSourceFolderVisible = false;
-        //    IsSelectTargetFolderVisible = false;
+        //    IsSelectSourceFolderExpanded = false;
+        //    IsSelectTargetFolderExpanded = false;
         //    IsCompressImagesVisible = true;
         //}
     }
