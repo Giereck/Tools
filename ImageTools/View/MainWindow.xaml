@@ -1,38 +1,52 @@
 ﻿<controls:MetroWindow x:Class="ImageTools.View.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:view="clr-namespace:ImageTools.View"
-                      Title="Agk Image Tools" 
-                      Height="650"
+                      xmlns:converters="clr-namespace:ImageTools.Infrastructure.Converters"
+                      xmlns:infrastructure="clr-namespace:ImageTools.Infrastructure"
+                      Title="Agk Image Tools"
                       Width="1100"
+                      Height="650"
+                      Background="{StaticResource BackgroundBrush1}"
                       DataContext="{Binding MainWindowViewModel, Source={StaticResource Locator}}"
                       GlowBrush="Black"
-                      WindowTitleBrush="{StaticResource BackgroundBrush1}"
-                      Background="{StaticResource BackgroundBrush1}">
+                      WindowTitleBrush="{StaticResource BackgroundBrush1}">
     <controls:MetroWindow.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
     </controls:MetroWindow.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-            <Expander Grid.Row="0" Header="Select source folder" IsExpanded="True">
+
+        <DockPanel>
+            <Expander DockPanel.Dock="Top"
+                      IsExpanded="{Binding IsSelectSourceFolderExpanded}">
+                <Expander.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Select source folder" Visibility="{Binding SelectedSourceFolderPath, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter={infrastructure:SystemType Bool=True}}" />
+                        <TextBlock Text="{Binding SelectedSourceFolderPath, StringFormat=Source folder: {0}}" Visibility="{Binding SelectedSourceFolderPath, Converter={StaticResource StringToVisibilityConverter}}" />
+                    </StackPanel>
+                </Expander.Header>
+
                 <view:SelectFolderView Title="Select source folder" FolderType="Source" />
-        </Expander>
-        
-        <Expander Grid.Row="1" Header="Select target folder" IsExpanded="False">
-            <view:SelectFolderView Title="Select target folder" FolderType="Target" />
-        </Expander>
+            </Expander>
 
-        <view:CompressImagesView Grid.Row="2" />
+            <Expander DockPanel.Dock="Top"
+                      IsExpanded="{Binding IsSelectTargetFolderExpanded}">
+                <Expander.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Select target folder" Visibility="{Binding SelectedTargetFolderPath, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter={infrastructure:SystemType Bool=True}}" />
+                        <TextBlock Text="{Binding SelectedTargetFolderPath, StringFormat=Source folder: {0}}" Visibility="{Binding SelectedTargetFolderPath, Converter={StaticResource StringToVisibilityConverter}}" />
+                    </StackPanel>
+                </Expander.Header>
+                <view:SelectFolderView Title="Select target folder" FolderType="Target" />
+            </Expander>
 
-
-        <!--<view:SelectFolderView Title="Select target folder" Visibility="{Binding DataContext.IsSelectTargetFolderVisible, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:MetroWindow}}}" />-->
-            
-        
+            <Expander DockPanel.Dock="Bottom"
+                      Header="Process images"
+                      IsExpanded="{Binding IsCompressImagesVisible}">
+                <view:CompressImagesView />
+            </Expander>
+        </DockPanel>
     </Grid>
 </controls:MetroWindow>
 

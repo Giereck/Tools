@@ -1,3 +1,4 @@
+using System;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using ImageTools.Infrastructure.Messages;
@@ -11,19 +12,17 @@ namespace ImageTools.ViewModel
         private bool _isSelectSourceFolderExpanded;
         private bool _isSelectTargetFolderExpanded;
         private bool _isCompressImagesVisible;
+        private string _selectedSourceFolderPath;
+        private string _selectedTargetFolderPath;
 
         public MainWindowViewModel(IMessenger messenger)
         {
             _messenger = messenger;
-            //messenger.Register<SourceFolderSelectedMessage>(this, SourceFolderSelectedMessageHandler);
-            //messenger.Register<TargetFolderSelectedMessage>(this, TargetFolderSelectedMessageHandler);
             messenger.Register<FolderSelectedMessage>(this, FolderSelectedMessageHandler);
 
             IsSelectSourceFolderExpanded = true;
             IsSelectTargetFolderExpanded = false;
             IsCompressImagesVisible = false;
-
-            //messenger.Send(new SetFolderTypeModeMessage(FolderType.Source));
         }
         
         public bool IsSelectSourceFolderExpanded
@@ -43,30 +42,47 @@ namespace ImageTools.ViewModel
             get { return _isCompressImagesVisible; }
             set { Set(ref _isCompressImagesVisible, value); }
         }
+        
+        public string SelectedSourceFolderPath
+        {
+            get { return _selectedSourceFolderPath; }
+            set { Set(ref _selectedSourceFolderPath, value); }
+        }
+        
+        public string SelectedTargetFolderPath
+        {
+            get { return _selectedTargetFolderPath; }
+            set { Set(ref _selectedTargetFolderPath, value); }
+        }
 
         private void FolderSelectedMessageHandler(FolderSelectedMessage message)
         {
-            if (message.FolderType == FolderType.Source)
+            switch (message.FolderType)
             {
-                _messenger.Send(new SetFolderTypeModeMessage(FolderType.Target));
+                case FolderType.Source:
+                    SelectedSourceFolderPath = string.Format($"Source folder: {message.FolderPath}");
+                    IsSelectSourceFolderExpanded = false;
+                    if (string.IsNullOrEmpty(SelectedTargetFolderPath))
+                    {
+                        IsSelectTargetFolderExpanded = true;
+                    }
+                    break;
+                case FolderType.Target:
+                    SelectedTargetFolderPath = string.Format($"Target folder: {message.FolderPath}");
+                    IsSelectTargetFolderExpanded = false;
+                    if (string.IsNullOrEmpty(SelectedSourceFolderPath))
+                    {
+                        IsSelectSourceFolderExpanded = true;
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("Invalid folder type.");
             }
 
-            //IsCompressImagesVisible = message.FolderType == FolderType.Target;
-            //IsSelectSourceFolderExpanded = !IsCompressImagesVisible;
+            if (!string.IsNullOrEmpty(SelectedSourceFolderPath) && !string.IsNullOrEmpty(SelectedTargetFolderPath))
+            {
+                IsCompressImagesVisible = true;
+            }
         }
-
-        //private void SourceFolderSelectedMessageHandler(SourceFolderSelectedMessage message)
-        //{
-        //    IsSelectSourceFolderExpanded = false;
-        //    IsSelectTargetFolderExpanded = true;
-        //    IsCompressImagesVisible = false;
-        //}
-
-        //private void TargetFolderSelectedMessageHandler(TargetFolderSelectedMessage message)
-        //{
-        //    IsSelectSourceFolderExpanded = false;
-        //    IsSelectTargetFolderExpanded = false;
-        //    IsCompressImagesVisible = true;
-        //}
     }
 }

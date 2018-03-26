@@ -98,9 +98,11 @@
     </ApplicationDefinition>
     <Compile Include="Compressor\ImageCompressor.cs" />
     <Compile Include="Compressor\JpgCompressor.cs" />
+    <Compile Include="Infrastructure\SystemTypeExtension.cs" />
     <Compile Include="Infrastructure\Container.cs" />
     <Compile Include="Infrastructure\ContainerBootStrapper.cs" />
     <Compile Include="Infrastructure\Converters\NullToBooleanConverter.cs" />
+    <Compile Include="Infrastructure\Converters\StringToVisibilityConverter.cs" />
     <Compile Include="Infrastructure\Messages\FolderSelectedMessage.cs" />
     <Compile Include="Infrastructure\Messages\SetFolderTypeModeMessage.cs" />
     <Compile Include="Infrastructure\Messages\SourceFolderSelectedMessage.cs" />
