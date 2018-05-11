@@ -18,8 +18,6 @@ namespace ImageTools.ViewModel
         private readonly IBreadcrumbGenerator _breadcrumbGenerator;
         private readonly IFolderManager _folderManager;
         private readonly IMessenger _messenger;
-        private FolderType _currentFolderType;
-        //private string _title;
         private Folder _currentFolder;
         private Folder _selectedFolder;
 
@@ -39,8 +37,6 @@ namespace ImageTools.ViewModel
             Breadcrumbs = new ObservableCollection<Folder>();
             Folders = new ObservableCollection<Folder>();
             CurrentFolder = Folder.Default;
-
-            //messenger.Register<SetFolderTypeModeMessage>(this, SetFolderTypeMessageHandler);
         }
         
         public ICommand DrillDownFolderCommand { get; }
@@ -57,21 +53,9 @@ namespace ImageTools.ViewModel
 
         public FolderType CurrentFolderType { get; set; }
 
-        //public FolderType CurrentFolderType
-        //{
-        //    get { return _currentFolderType; }
-        //    set { Set(ref _currentFolderType, value); }
-        //}
-
-        //public string Title
-        //{
-        //    get { return _title; }
-        //    set { Set(ref _title, value); }
-        //}
-
         public Folder CurrentFolder
         {
-            get { return _currentFolder; }
+            get => _currentFolder;
             set
             {
                 if (Set(ref _currentFolder, value))
@@ -84,8 +68,8 @@ namespace ImageTools.ViewModel
         
         public Folder SelectedFolder
         {
-            get { return _selectedFolder; }
-            set { Set(ref _selectedFolder, value); }
+            get => _selectedFolder;
+            set => Set(ref _selectedFolder, value);
         }
 
         public ObservableCollection<Folder> Breadcrumbs { get; } 
@@ -117,7 +101,7 @@ namespace ImageTools.ViewModel
 
         private bool NavigateBackCanExecute()
         {
-            return CurrentFolder != null && !string.IsNullOrEmpty(CurrentFolder.ParentFolder.Path);
+            return CurrentFolder != null && CurrentFolder.Name != "My computer";
         }
 
         private void NavigateBackExecuted()
@@ -159,32 +143,5 @@ namespace ImageTools.ViewModel
         {
             _messenger.Send(new FolderSelectedMessage(CurrentFolderType, SelectedFolder.Path));
         }
-
-        private void SetFolderTypeMessageHandler(SetFolderTypeModeMessage message)
-        {
-            CurrentFolderType = message.FolderType;
-            Reset();
-            //SetTitle();
-        }
-
-        private void Reset()
-        {
-            CurrentFolder = Folder.Default;
-        }
-
-        //private void SetTitle()
-        //{
-        //    switch (CurrentFolderType)
-        //    {
-        //        case FolderType.Source:
-        //            Title = "Select source folder";
-        //            break;
-        //        case FolderType.Target:
-        //            Title = "Select target folder";
-        //            break;
-        //        default:
-        //            throw new ArgumentOutOfRangeException();
-        //    }
-        //}
     }
 }

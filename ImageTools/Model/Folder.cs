@@ -6,28 +6,25 @@ namespace ImageTools.Model
 {
     public class Folder : ObservableObject
     {
-        public static Folder Root => new Folder(@"C:\", @"c:\");
+        public static Folder Root => new Folder("My computer", string.Empty);
         public static Folder Default => new Folder("Desktop", Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
         public static Folder None => new Folder(string.Empty, string.Empty);
 
+        private string _path;
         private bool _isSelected;
         private Folder _parentFolder;
 
         public Folder(string name, string path)
         {
-            if (name == null) throw new ArgumentNullException(nameof(name));
-            if (path == null) throw new ArgumentNullException(nameof(path));
-
-            Name = name;
-            Path = path;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Path = path ?? throw new ArgumentNullException(nameof(path));
         }
 
         public string Name { get; }
 
-        private string _path;
         public string Path
         {
-            get { return _path; }
+            get => _path;
             private set
             {
                 if (IsRootFolderPath(value) && !value.EndsWith("\\"))

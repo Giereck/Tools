@@ -31,11 +31,21 @@ namespace ImageTools.Utilities
 
             if (string.IsNullOrEmpty(parentFolderPath))
             {
-                parentFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                //parentFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                var logicalDrives = Directory.GetLogicalDrives();
+
+                foreach (var drive in logicalDrives)
+                {
+                    subFolders.Add(new Folder(drive.ToUpper(), drive));
+                }
+            }
+            else
+            {
+                var accessibleDirectories = DiscardUnauthorizedDirectories(Directory.GetDirectories(parentFolderPath));
+                subFolders.AddRange(accessibleDirectories.Select(ConvertToFolder));
             }
 
-            var accessibleDirectories = DiscardUnauthorizedDirectories(Directory.GetDirectories(parentFolderPath));
-            subFolders.AddRange(accessibleDirectories.Select(ConvertToFolder));
+            
             return subFolders;
         }
 
@@ -47,6 +57,8 @@ namespace ImageTools.Utilities
         public Folder GetParentFolder(string folderPath)
         {
             if (folderPath == null) throw new ArgumentNullException(nameof(folderPath));
+            
+            if(string.IsNullOrEmpty(folderPath)) return Folder.None;
 
             var parentDirectory = Directory.GetParent(folderPath);
 
