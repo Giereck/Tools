@@ -143,7 +143,7 @@
                     HorizontalAlignment="Center"
                     Orientation="Horizontal">
             <TextBlock Text="Processed " />
-            <TextBlock Text="{Binding NumberOfCompressedImages}" />
+            <TextBlock Text="{Binding NumberOfProcessedFiles}" />
             <TextBlock Text=" of " />
             <TextBlock Text="{Binding NumberOfImages}" />
             <TextBlock Text=" images." />

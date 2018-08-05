@@ -28,7 +28,7 @@ namespace ImageTools.ViewModel
         private bool _shouldRenameFiles;
         private string _renameFormat;
         private int _numberOfImages;
-        private int _numberOfCompressedImages;
+        private int _numberOfProcessedFiles;
         private bool _isCompressing;
 
         public CompressImagesViewModel(IFolderManager folderManager, IEquipmentDetector equipmentDetector, IMessenger messenger)
@@ -40,7 +40,7 @@ namespace ImageTools.ViewModel
             _equipmentDetector = equipmentDetector;
 
             _numberOfImages = 0;
-            _numberOfCompressedImages = 0;
+            _numberOfProcessedFiles = 0;
             RenameFormat = "yyyyMMdd_hhmmss";
 
             SelectSourceFolderCommand = new RelayCommand(SelectSourceFolderExecute);
@@ -106,10 +106,10 @@ namespace ImageTools.ViewModel
             set { Set(ref _numberOfImages, value); }
         }
 
-        public int NumberOfCompressedImages
+        public int NumberOfProcessedFiles
         {
-            get { return _numberOfCompressedImages; }
-            set { Set(ref _numberOfCompressedImages, value); }
+            get { return _numberOfProcessedFiles; }
+            set { Set(ref _numberOfProcessedFiles, value); }
         }
 
         public bool IsCompressing
@@ -164,9 +164,9 @@ namespace ImageTools.ViewModel
 
         private void CompressImagesExecute()
         {
-            NumberOfCompressedImages = 0;
+            NumberOfProcessedFiles = 0;
 
-            var filePaths = _folderManager.GetJpgFilesFromFolder(SourceFolder);
+            var filePaths = _folderManager.GetMediaFilesFromFolder(SourceFolder);
 
             try
             {
@@ -197,21 +197,28 @@ namespace ImageTools.ViewModel
                     {
                         var targetFilePath = filePathGenerator.GetTargetFilePath(filePath, TargetFolder);
 
-                        try
+                        if (ShouldCompressImage(filePath))
                         {
-                            using (var imageCompressor = new JpgCompressor(SelectedQuality))
+                            try
                             {
-                                imageCompressor.Compress(filePath, targetFilePath);
+                                using (var imageCompressor = new JpgCompressor(SelectedQuality))
+                                {
+                                    imageCompressor.Compress(filePath, targetFilePath);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                var message = $"An error occurred while trying to compress image: '{filePath}'. The reason was: '{ex.Message}'";
+                                MessageBox.Show(message, "Image tools", MessageBoxButtons.OK);
+                                break;
                             }
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            var message = $"An error occurred while trying to compress image: '{filePath}'. The reason was: '{ex.Message}'";
-                            MessageBox.Show(message, "Image tools", MessageBoxButtons.OK);
-                            break;
+                            File.Copy(filePath, targetFilePath);
                         }
 
-                        NumberOfCompressedImages++;
+                        NumberOfProcessedFiles++;
                         
                     }
                 }).ContinueWith(
@@ -223,6 +230,18 @@ namespace ImageTools.ViewModel
                         }
                     });
             return task;
+        }
+
+        private bool ShouldCompressImage(string filePath)
+        {
+            var extension = Path.GetExtension(filePath);
+
+            if (string.IsNullOrEmpty(extension))
+            {
+                return false;
+            }
+
+            return extension.Equals(".jpg", StringComparison.OrdinalIgnoreCase);
         }
 
         private IFileNameGenerator GetFilePathGenerator()
@@ -248,7 +267,7 @@ namespace ImageTools.ViewModel
 
         private void AnalyzeSourceFolder()
         {
-            var jpgFilePaths = _folderManager.GetJpgFilesFromFolder(_sourceFolder);
+            var jpgFilePaths = _folderManager.GetMediaFilesFromFolder(_sourceFolder);
             NumberOfImages = jpgFilePaths.Count;
 
             DetectEquipment();

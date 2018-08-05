@@ -8,14 +8,11 @@ using System.Text.RegularExpressions;
 
 namespace ImageTools.Utilities
 {
-    public interface IImagePropertyExtractor
+    public interface IImageMetaDataExtractor : IMetaDataExtractor
     {
-        DateTime GetOriginalCreationDateTime(string filePath);
-
-        string GetEquipmentName(string filePath);
     }
 
-    public class ImagePropertyExtractor : IImagePropertyExtractor
+    public class ImageMetaDataExtractor : IImageMetaDataExtractor
     {
         private readonly Encoding Encoding = new UTF8Encoding();
 

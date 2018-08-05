@@ -12,13 +12,13 @@ namespace ImageTools.Renamer
 
     public class FormatFileNameGenerator : IFormatFileNameGenerator
     {
-        private readonly IImagePropertyExtractor _imagePropertyExtractor;
+        private readonly IMetaDataExtractor _imageMetaDataExtractor;
 
-        public FormatFileNameGenerator(IImagePropertyExtractor imagePropertyExtractor)
+        public FormatFileNameGenerator(IMetaDataExtractor imageMetaDataExtractor)
         {
-            if (imagePropertyExtractor == null) throw new ArgumentNullException(nameof(imagePropertyExtractor));
+            if (imageMetaDataExtractor == null) throw new ArgumentNullException(nameof(imageMetaDataExtractor));
 
-            _imagePropertyExtractor = imagePropertyExtractor;
+            _imageMetaDataExtractor = imageMetaDataExtractor;
         }
 
         public ImageOptions Options { get; set; }
@@ -59,8 +59,8 @@ namespace ImageTools.Renamer
 
         private DateTime GetImageDateTaken(string filePath)
         {
-            var equipmentName = _imagePropertyExtractor.GetEquipmentName(filePath);
-            var dateTaken = _imagePropertyExtractor.GetOriginalCreationDateTime(filePath);
+            var equipmentName = _imageMetaDataExtractor.GetEquipmentName(filePath);
+            var dateTaken = _imageMetaDataExtractor.GetOriginalCreationDateTime(filePath);
 
             var equipment = Options.EquipmentList.FirstOrDefault(e => e.Name == equipmentName);
 

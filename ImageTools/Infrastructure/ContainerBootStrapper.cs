@@ -16,7 +16,9 @@ namespace ImageTools.Infrastructure
             container.Register(Component.For<IBreadcrumbGenerator>().ImplementedBy<BreadcrumbGenerator>());
             container.Register(Component.For<IFolderManager>().ImplementedBy<FolderManager>());
             container.Register(Component.For<IEquipmentDetector>().ImplementedBy<EquipmentDetector>());
-            container.Register(Component.For<IImagePropertyExtractor>().ImplementedBy<ImagePropertyExtractor>());
+            container.Register(Component.For<IMetaDataExtractor>().ImplementedBy<MediaMetaDataExtrator>());
+            container.Register(Component.For<IImageMetaDataExtractor>().ImplementedBy<ImageMetaDataExtractor>());
+            container.Register(Component.For<IVideoMetaDataExtractor>().ImplementedBy<VideoMetaDataExtractor>());
             container.Register(Component.For<IFormatFileNameGenerator>().ImplementedBy<FormatFileNameGenerator>());
             container.Register(Component.For<IImitatingFileNameGenerator>().ImplementedBy<ImitatingFileNameGenerator>());
         }

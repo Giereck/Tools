@@ -13,15 +13,15 @@ namespace ImageTools.Utilities
     public class EquipmentDetector : IEquipmentDetector
     {
         private readonly IFolderManager _folderManager;
-        private readonly IImagePropertyExtractor _imagePropertyExtractor;
+        private readonly IMetaDataExtractor _imageMetaDataExtractor;
 
-        public EquipmentDetector(IFolderManager folderManager, IImagePropertyExtractor imagePropertyExtractor)
+        public EquipmentDetector(IFolderManager folderManager, IMetaDataExtractor imageMetaDataExtractor)
         {
             if (folderManager == null) throw new ArgumentNullException(nameof(folderManager));
-            if (imagePropertyExtractor == null) throw new ArgumentNullException(nameof(imagePropertyExtractor));
+            if (imageMetaDataExtractor == null) throw new ArgumentNullException(nameof(imageMetaDataExtractor));
 
             _folderManager = folderManager;
-            _imagePropertyExtractor = imagePropertyExtractor;
+            _imageMetaDataExtractor = imageMetaDataExtractor;
         }
 
         public IList<Equipment> DetectEquipment(string folderPath)
@@ -37,11 +37,11 @@ namespace ImageTools.Utilities
         {
             HashSet<string> uniqueEquipment = new HashSet<string>();
 
-            var filePaths = _folderManager.GetJpgFilesFromFolder(folderPath);
+            var filePaths = _folderManager.GetMediaFilesFromFolder(folderPath);
 
             foreach (var filePath in filePaths)
             {
-                var equipmentName = _imagePropertyExtractor.GetEquipmentName(filePath);
+                var equipmentName = _imageMetaDataExtractor.GetEquipmentName(filePath);
                 uniqueEquipment.Add(equipmentName);
             }
 

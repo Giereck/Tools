@@ -8,7 +8,7 @@ namespace ImageTools.Utilities
 {
     public interface IFolderManager
     {
-        IList<string> GetJpgFilesFromFolder(string folderPath);
+        IList<string> GetMediaFilesFromFolder(string folderPath);
 
         List<Folder> GetSubFolders(string parentFolderPath);
 
@@ -17,12 +17,25 @@ namespace ImageTools.Utilities
 
     public class FolderManager : IFolderManager
     {
-        public IList<string> GetJpgFilesFromFolder(string folderPath)
+        public IList<string> GetMediaFilesFromFolder(string folderPath)
         {
             return
                 Directory.GetFiles(folderPath)
-                    .Where(f => Path.GetExtension(f).Equals(".jpg", StringComparison.OrdinalIgnoreCase))
+                    .Where(IsMediaFile)
                     .ToList();
+        }
+
+        private bool IsMediaFile(string filePath)
+        {
+            var extension = Path.GetExtension(filePath);
+
+            if (string.IsNullOrEmpty(extension))
+            {
+                return false;
+            }
+
+            return extension.Equals(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                   extension.Equals(".mp4", StringComparison.OrdinalIgnoreCase);
         }
 
         public List<Folder> GetSubFolders(string parentFolderPath)
